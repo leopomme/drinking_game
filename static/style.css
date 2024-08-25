@@ -1,29 +1,42 @@
+/* General Reset */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
 body {
     font-family: Arial, sans-serif;
     background-color: #f7d7a7; /* Warm background color */
-    margin: 0;
-    padding: 0;
     display: flex;
-    justify-content: center;
+    flex-direction: column;
     align-items: center;
-    height: 100vh;
+    justify-content: center;
+    min-height: 100vh;
 }
 
-.player-turn {
+header {
     width: 100%;
     text-align: center;
-    font-size: 48px; /* Large text for player turn */
-    color: white;
-    margin: 20px 0;
+    padding: 20px 0;
+    background-color: #f7d7a7; /* Matches the body background */
 }
 
+/* Player Turn Display */
+.player-turn {
+    font-size: 48px; /* Large text for player turn */
+    color: white;
+    margin-bottom: 10px; /* Space between name and timer bar */
+}
+
+/* Timer Bar */
 .drink-timer {
     width: 80%; /* Adjust this width to your preference */
-    height: 20px; /* Adjust height for the timer bar */
-    background-color: transparent;
+    height: 20px;
     border: 2px solid white;
     border-radius: 10px;
-    margin: 10px auto; /* Center the timer bar horizontally */
+    margin: 0 auto 20px auto; /* Center and space between bar and main content */
+    background-color: transparent;
     position: relative;
 }
 
@@ -35,7 +48,7 @@ body {
     transition: width 10s linear; /* Adjust the duration for the timer */
 }
 
-
+/* Main Container */
 .container {
     display: flex;
     flex-direction: column;
@@ -60,27 +73,22 @@ body {
     position: relative;
 }
 
-.condition {
-    text-align: left;
-    font-size: 18px;
-    margin: 5px 0; /* Add margin for spacing between conditions */
-}
-
 .menu-icon {
     cursor: pointer;
     font-size: 36px; /* Increase size of the menu icon */
-    padding: 0 10px;
     position: absolute;
     right: 10px;
     top: 10px; /* Ensure it stays on the top right */
 }
 
+/* Main Content */
 .main {
     margin-top: 20px;
     width: 100%;
     text-align: center;
 }
 
+/* Roll Button */
 .roll-button {
     padding: 15px 30px;
     font-size: 22px;
@@ -90,8 +98,14 @@ body {
     background-color: #ff9800;
     color: white;
     margin-bottom: 20px;
+    transition: background-color 0.3s ease;
 }
 
+.roll-button:hover {
+    background-color: #e68900;
+}
+
+/* Players Container */
 .players-container {
     display: flex;
     justify-content: center;
@@ -100,6 +114,7 @@ body {
     width: 100%;
 }
 
+/* Players */
 .players {
     display: flex;
     flex-wrap: wrap;
@@ -118,6 +133,11 @@ body {
     border-radius: 10px;
     box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
     cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.player:hover, .add-player:hover {
+    background-color: #ffedcc;
 }
 
 .add-player {
@@ -131,11 +151,7 @@ body {
     margin-top: 5px;
 }
 
-.plus-icon {
-    font-size: 24px;
-    color: #ff9800;
-}
-
+/* Settings */
 .settings {
     display: none;
     position: fixed;
@@ -173,18 +189,7 @@ body {
     transition: opacity 0.2s;
 }
 
-#difficulty::-webkit-slider-thumb {
-    -webkit-appearance: none;
-    appearance: none;
-    width: 30px;
-    height: 30px;
-    background: transparent;
-    background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="30" height="30"><text x="0" y="25" font-size="30">🍺</text></svg>') no-repeat center;
-    background-size: contain;
-    cursor: pointer;
-}
-
-#difficulty::-moz-range-thumb {
+#difficulty::-webkit-slider-thumb, #difficulty::-moz-range-thumb {
     width: 30px;
     height: 30px;
     background: transparent;
@@ -262,4 +267,9 @@ button {
     border: none;
     background-color: #ff9800;
     color: white;
+    transition: background-color 0.3s ease;
+}
+
+button:hover {
+    background-color: #e68900;
 }
