@@ -8,15 +8,47 @@ function closeSettings() {
     updateConditions();
 }
 
-function timeToSip() {
-    updateConditions(); // Update conditions when the button is clicked
-
+function updatePlayerTurn() {
     const playersContainer = document.getElementById('players');
     const playerElements = playersContainer.getElementsByClassName('player');
+    const currentPlayerIndex = Math.floor(Math.random() * playerElements.length);
+    const currentPlayer = playerElements[currentPlayerIndex].querySelector('span').innerText;
+
+    const playerTurnDiv = document.getElementById('player-turn');
+    playerTurnDiv.innerHTML = `${currentPlayer}'s turn!`;
+
+    return currentPlayerIndex;
+}
+
+function startTimer(currentPlayer) {
+    const timerBar = document.getElementById('timer-bar');
+    timerBar.style.width = '0%';
+
+    // Reset any previous timer bar animation
+    timerBar.style.transition = 'none';
+    setTimeout(() => {
+        timerBar.style.transition = 'width 10s linear'; // Adjust time as needed
+        timerBar.style.width = '100%';
+    }, 10); 
+
+    // Trigger event when the timer is full
+    setTimeout(() => {
+        alert(`${currentPlayer}, time's up! Drink your drink!`);
+        // Add any additional animations or actions here
+    }, 10000); // This matches the duration of the timer's transition
+}
+
+function timeToSip() {
+    const currentPlayerIndex = updatePlayerTurn(); // Get the current player's index and update the display
+    const playersContainer = document.getElementById('players');
+    const playerElements = playersContainer.getElementsByClassName('player');
+    const currentPlayer = playerElements[currentPlayerIndex].querySelector('span').innerText;
     const difficulty = document.getElementById('difficulty').value;
 
-    for (let playerElement of playerElements) {
-        const drinksElement = playerElement.querySelector('.drinks');
+    startTimer(currentPlayer); // Start the timer for the current player
+
+    for (let i = 0; i < playerElements.length; i++) {
+        const drinksElement = playerElements[i].querySelector('.drinks');
         drinksElement.innerHTML = ''; // Clear previous drinks
 
         let shouldDrink = Math.random();
@@ -41,12 +73,20 @@ function timeToSip() {
             if (shouldDrink) sips = Math.floor(Math.random() * 5) + 2;
         }
 
-        drinksElement.innerHTML = `${'🍺'.repeat(sips)} (${sips})`;
-        if (sips === 0) {
-            drinksElement.innerHTML = '0';
+        if (i === currentPlayerIndex) {
+            drinksElement.innerHTML = `${'🍺'.repeat(sips)} (${sips})`;
+            if (sips === 0) {
+                drinksElement.innerHTML = '0';
+            }
         }
     }
 }
+
+document.addEventListener('keydown', function(event) {
+    if (event.code === 'Space') {
+        timeToSip();
+    }
+});
 
 function addPlayer() {
     const playersContainer = document.getElementById('players');

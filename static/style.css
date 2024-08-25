@@ -9,6 +9,33 @@ body {
     height: 100vh;
 }
 
+.player-turn {
+    width: 100%;
+    text-align: center;
+    font-size: 48px; /* Adjust the size to your preference */
+    color: white;
+    margin: 20px 0;
+}
+
+.drink-timer {
+    width: 80%; /* Adjust this width based on your layout */
+    height: 20px; /* Adjust height for the timer bar */
+    background-color: transparent;
+    border: 2px solid white;
+    border-radius: 10px;
+    margin: 10px auto;
+    position: relative;
+}
+
+.timer-bar {
+    width: 0;
+    height: 100%;
+    background-color: green;
+    border-radius: 10px;
+    transition: width 10s linear; /* Adjust the time for the transition */
+}
+
+
 .container {
     display: flex;
     flex-direction: column;
