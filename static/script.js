@@ -1,3 +1,14 @@
+// Global Variables
+let currentPlayerName = '';
+let timerInterval;
+let timerPaused = false;
+let timerTime = 0; // in seconds
+const timerDuration = 120; // 2 minutes in seconds
+let playerStats = {};
+let enableQuestions = true;
+let enableSpecialAbilities = true;
+let enableTimer = true;
+
 // Open the settings menu
 function openSettings() {
     const settingsElement = document.getElementById('settings');
@@ -17,7 +28,7 @@ function updatePlayerTurn() {
     const playersContainer = document.getElementById('players');
     const playerElements = Array.from(playersContainer.getElementsByClassName('player'));
     const currentPlayerIndex = Math.floor(Math.random() * playerElements.length);
-    const currentPlayerName = playerElements[currentPlayerIndex].querySelector('span').innerText;
+    currentPlayerName = playerElements[currentPlayerIndex].querySelector('span').innerText;
 
     const playerTurnDiv = document.getElementById('player-turn');
     playerTurnDiv.textContent = `${currentPlayerName}'s turn!`;
@@ -25,22 +36,55 @@ function updatePlayerTurn() {
     return currentPlayerIndex;
 }
 
-// Start the timer bar animation for the current player
-function startTimer(currentPlayerName) {
+// Start the independent timer bar
+function startTimerBar() {
+    if (timerInterval) {
+        clearInterval(timerInterval);
+    }
+    timerTime = 0;
+    timerPaused = false;
     const timerBar = document.getElementById('timer-bar');
     timerBar.style.width = '0%';
     timerBar.style.transition = 'none';
+    timerBar.classList.remove('timer-full');
 
-    setTimeout(() => {
-        timerBar.style.transition = 'width 10s linear';
-        timerBar.style.width = '100%';
-    }, 10);
+    timerInterval = setInterval(() => {
+        if (!timerPaused) {
+            timerTime++;
+            const percentage = (timerTime / timerDuration) * 100;
+            timerBar.style.width = percentage + '%';
 
-    setTimeout(() => {
-        alert(`${currentPlayerName}, time's up! Drink your drink!`);
-        // Reset the timer bar after it's full
-        timerBar.style.width = '0%';
-    }, 10000); // Match this duration with the timer's transition
+            if (timerTime >= timerDuration) {
+                clearInterval(timerInterval);
+                timerBarFull();
+            }
+        }
+    }, 1000); // update every second
+}
+
+function pauseTimerBar() {
+    timerPaused = true;
+}
+
+function resumeTimerBar() {
+    timerPaused = false;
+}
+
+function resetTimerBar() {
+    clearInterval(timerInterval);
+    timerTime = 0;
+    timerPaused = false;
+    const timerBar = document.getElementById('timer-bar');
+    timerBar.style.width = '0%';
+    timerBar.classList.remove('timer-full');
+    startTimerBar();
+}
+
+function timerBarFull() {
+    // The timer is full
+    const timerBar = document.getElementById('timer-bar');
+    timerBar.classList.add('timer-full');
+    alert(`${currentPlayerName}, time's up! Time to drink!`);
 }
 
 // Trigger the drinking action and update the player states
@@ -48,12 +92,18 @@ function timeToSip() {
     const currentPlayerIndex = updatePlayerTurn();
     const playersContainer = document.getElementById('players');
     const playerElements = playersContainer.getElementsByClassName('player');
-    const currentPlayer = playerElements[currentPlayerIndex].querySelector('span').innerText;
+    currentPlayerName = playerElements[currentPlayerIndex].querySelector('span').innerText;
     const difficulty = parseFloat(document.getElementById('difficulty').value);
 
-    startTimer(currentPlayer);
+    if (enableSpecialAbilities) {
+        assignSpecialAbility(currentPlayerName);
+    } else {
+        const abilitiesContainer = document.getElementById('special-abilities');
+        abilitiesContainer.innerHTML = '';
+    }
 
     Array.from(playerElements).forEach((playerElement, index) => {
+        const playerName = playerElement.querySelector('span').innerText;
         const drinksElement = playerElement.querySelector('.drinks');
         drinksElement.innerHTML = '';
 
@@ -70,10 +120,16 @@ function timeToSip() {
             sips = Math.random() < 0.9 ? Math.floor(Math.random() * 5) + 2 : 0;
         }
 
-        if (index === currentPlayerIndex) {
-            drinksElement.innerHTML = sips ? `${'🍺'.repeat(sips)} (${sips})` : '0';
+        drinksElement.innerHTML = sips ? `${'🍺'.repeat(sips)} (${sips})` : '0';
+
+        // Update playerStats
+        if (!playerStats[playerName]) {
+            playerStats[playerName] = { totalDrinks: 0 };
         }
+        playerStats[playerName].totalDrinks += sips;
     });
+
+    updatePlayerDrinkTracker();
 }
 
 // Handle spacebar key press for rolling the dice
@@ -90,8 +146,11 @@ function addPlayer() {
     const newPlayer = document.createElement('div');
     newPlayer.className = 'player';
     newPlayer.onclick = () => editPlayer(newPlayer);
-    newPlayer.innerHTML = `<span>Enter Player ${playerCount + 1}</span><div class="drinks">0</div>`;
+    const playerName = `Player ${playerCount + 1}`;
+    newPlayer.innerHTML = `<span>${playerName}</span><div class="drinks">0</div>`;
     playersContainer.appendChild(newPlayer);
+    playerStats[playerName] = { totalDrinks: 0 };
+    updatePlayerDrinkTracker();
 }
 
 // Edit an existing player's name
@@ -100,6 +159,13 @@ function editPlayer(playerElement) {
     const newName = prompt("Edit player name:", playerName);
     if (newName) {
         playerElement.querySelector('span').innerText = newName;
+        if (playerStats[playerName]) {
+            playerStats[newName] = playerStats[playerName];
+            delete playerStats[playerName];
+        } else {
+            playerStats[newName] = { totalDrinks: 0 };
+        }
+        updatePlayerDrinkTracker();
     }
 }
 
@@ -129,7 +195,12 @@ function removePlayer(playerName) {
         playersContainer.removeChild(playerToRemove);
     }
 
+    if (playerStats[playerName]) {
+        delete playerStats[playerName];
+    }
+
     populatePlayerList();
+    updatePlayerDrinkTracker();
 }
 
 // Update the game conditions based on settings
@@ -138,18 +209,79 @@ function updateConditions() {
     const selectedConditionsCount = parseInt(document.getElementById('conditions-select').value, 10);
     conditionsContainer.innerHTML = '';
 
-    const shuffledConditions = conditions.sort(() => 0.5 - Math.random());
-    const selectedConditions = shuffledConditions.slice(0, selectedConditionsCount);
+    if (enableQuestions) {
+        const shuffledConditions = conditions.sort(() => 0.5 - Math.random());
+        const selectedConditions = shuffledConditions.slice(0, selectedConditionsCount);
 
-    selectedConditions.forEach(condition => {
-        const conditionElement = document.createElement('li');
-        conditionElement.className = 'condition';
-        conditionElement.innerText = condition;
-        conditionsContainer.appendChild(conditionElement);
-    });
+        selectedConditions.forEach(condition => {
+            const conditionElement = document.createElement('li');
+            conditionElement.className = 'condition';
+            conditionElement.innerText = condition;
+            conditionsContainer.appendChild(conditionElement);
+        });
+    }
 }
 
 // Save the settings and close the settings menu
 function saveSettings() {
+    enableQuestions = document.getElementById('enable-questions').checked;
+    enableSpecialAbilities = document.getElementById('enable-special-abilities').checked;
+    enableTimer = document.getElementById('enable-timer').checked;
+
+    const timerBarContainer = document.getElementById('drink-timer');
+    const timerControls = document.querySelector('.timer-controls');
+    if (enableTimer) {
+        timerBarContainer.style.display = 'block';
+        timerControls.style.display = 'flex';
+        startTimerBar();
+    } else {
+        timerBarContainer.style.display = 'none';
+        timerControls.style.display = 'none';
+        clearInterval(timerInterval);
+    }
+
     closeSettings();
 }
+
+// Assign a random special ability to the current player
+const specialAbilities = [
+    'Swap Sips: Allows the player to swap their sips with another player\'s.',
+    'Double Trouble: Doubles the number of sips another player must take for the next round.',
+    'Skip or Reverse: Skip a turn or reverse the play order.',
+    'Shield: Protects the player from taking sips for one round.',
+    // Feel free to add more abilities
+];
+
+function assignSpecialAbility(playerName) {
+    const abilitiesContainer = document.getElementById('special-abilities');
+    abilitiesContainer.innerHTML = ''; // Clear previous abilities
+
+    const randomAbilityIndex = Math.floor(Math.random() * specialAbilities.length);
+    const ability = specialAbilities[randomAbilityIndex];
+
+    const abilityElement = document.createElement('div');
+    abilityElement.className = 'ability';
+    abilityElement.innerHTML = `<strong>${playerName}'s Ability:</strong><br>${ability}`;
+    abilitiesContainer.appendChild(abilityElement);
+}
+
+// Update the player drink tracker
+function updatePlayerDrinkTracker() {
+    const trackerContainer = document.getElementById('player-drink-tracker');
+    trackerContainer.innerHTML = ''; // Clear existing content
+
+    for (const playerName in playerStats) {
+        const playerStat = playerStats[playerName];
+        const playerElement = document.createElement('div');
+        playerElement.className = 'player-stat';
+        playerElement.innerHTML = `<span>${playerName}</span>: <span>${playerStat.totalDrinks}</span>`;
+        trackerContainer.appendChild(playerElement);
+    }
+}
+
+// Start the timer bar on page load if enabled
+window.onload = function() {
+    if (enableTimer) {
+        startTimerBar();
+    }
+};

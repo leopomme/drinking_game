@@ -7,35 +7,39 @@
 
 body {
     font-family: Arial, sans-serif;
-    background-color: #f7d7a7; /* Warm background color */
+    background-color: #f7d7a7;
     display: flex;
     flex-direction: column;
     align-items: center;
-    justify-content: center;
+    justify-content: flex-start;
     min-height: 100vh;
 }
 
+/* Header */
 header {
     width: 100%;
     text-align: center;
     padding: 20px 0;
-    background-color: #f7d7a7; /* Matches the body background */
+    background-color: #f7d7a7;
+    position: fixed;
+    top: 0;
+    left: 0;
 }
 
 /* Player Turn Display */
 .player-turn {
-    font-size: 48px; /* Large text for player turn */
+    font-size: 48px;
     color: white;
-    margin-bottom: 10px; /* Space between name and timer bar */
+    margin-bottom: 10px;
 }
 
 /* Timer Bar */
 .drink-timer {
-    width: 80%; /* Adjust this width to your preference */
+    width: 80%;
     height: 20px;
     border: 2px solid white;
     border-radius: 10px;
-    margin: 0 auto 20px auto; /* Center and space between bar and main content */
+    margin: 0 auto;
     background-color: transparent;
     position: relative;
 }
@@ -45,7 +49,30 @@ header {
     height: 100%;
     background-color: green;
     border-radius: 10px;
-    transition: width 10s linear; /* Adjust the duration for the timer */
+    transition: width 1s linear;
+}
+
+.timer-full {
+    animation: flash 1s infinite;
+}
+
+@keyframes flash {
+    0% { background-color: green; }
+    50% { background-color: red; }
+    100% { background-color: green; }
+}
+
+/* Timer Controls */
+.timer-controls {
+    display: flex;
+    justify-content: center;
+    margin-top: 10px;
+}
+
+.timer-controls button {
+    margin: 0 5px;
+    padding: 5px 10px;
+    font-size: 14px;
 }
 
 /* Main Container */
@@ -56,10 +83,52 @@ header {
     padding: 40px;
     background-color: #fff3e0;
     border-radius: 10px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-    max-width: 1000px; /* Increase maximum width */
+    max-width: 1200px;
+    width: 100%;
+    margin-top: 200px; /* To avoid overlap with fixed header */
+}
+
+/* Game Container */
+.game-container {
+    display: flex;
     width: 100%;
 }
+
+/* Special Abilities */
+.special-abilities {
+    width: 20%;
+    padding: 10px;
+}
+
+.ability {
+    background-color: #fff3e0;
+    border: 2px solid #ffb74d;
+    border-radius: 10px;
+    padding: 10px;
+    margin-bottom: 10px;
+}
+
+/* Center Content */
+.center-content {
+    width: 60%;
+    padding: 10px;
+    text-align: center;
+}
+
+/* Player Drink Tracker */
+.player-drink-tracker {
+    width: 20%;
+    padding: 10px;
+}
+
+.player-stat {
+    background-color: #fff3e0;
+    border: 2px solid #ffb74d;
+    border-radius: 10px;
+    padding: 5px;
+    margin-bottom: 5px;
+}
+
 
 .header {
     display: flex;
