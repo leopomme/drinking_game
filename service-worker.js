@@ -1,7 +1,7 @@
 const CACHE_NAME = 'drinking-game-cache-v1';
 const urlsToCache = [
     './',
-    './templates/index.html',
+    './index.html',
     './static/style.css',
     './static/script.js',
     './static/conditions.js',

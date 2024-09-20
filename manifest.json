@@ -1,8 +1,8 @@
 {
     "name": "Drinking Game",
     "short_name": "DrinkGame",
-    "start_url": "/templates/index.html",
-    "scope": "/templates/",
+    "start_url": "/",
+    "scope": "/",
     "display": "standalone",
     "background_color": "#f7d7a7",
     "theme_color": "#f7d7a7",

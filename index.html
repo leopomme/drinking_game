@@ -3,13 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <title>Drinking Game</title>
-    <link rel="stylesheet" href="../static/style.css">
+    <link rel="stylesheet" href="static/style.css">
 
-    <link rel="manifest" href="../manifest.json">
+    <link rel="manifest" href="manifest.json">
 
     <meta name="theme-color" content="#f7d7a7">
     <!-- Apple Touch Icons -->
-    <link rel="apple-touch-icon" href="../icons/icon-192x192.png">
+    <link rel="apple-touch-icon" href="icons/icon-192x192.png">
 
     <!-- iOS Meta Tags -->
     <meta name="apple-mobile-web-app-capable" content="yes">
@@ -116,13 +116,13 @@
         </div>
     </aside>
 
-    <script src="../static/conditions.js"></script>
-    <script src="../static/script.js"></script>
+    <script src="static/conditions.js"></script>
+    <script src="static/script.js"></script>
 
     <script>
         if ('serviceWorker' in navigator) {
           window.addEventListener('load', function() {
-            navigator.serviceWorker.register('../service-worker.js')
+            navigator.serviceWorker.register('service-worker.js')
             .then(function(registration) {
               console.log('ServiceWorker registration successful with scope: ', registration.scope);
             }, function(err) {
