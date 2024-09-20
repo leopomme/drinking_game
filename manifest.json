@@ -1,0 +1,22 @@
+{
+    "name": "Drinking Game",
+    "short_name": "DrinkGame",
+    "start_url": "/templates/index.html",
+    "scope": "/templates/",
+    "display": "standalone",
+    "background_color": "#f7d7a7",
+    "theme_color": "#f7d7a7",
+    "icons": [
+      {
+        "src": "icons/icon-192x192.png",
+        "sizes": "192x192",
+        "type": "image/png"
+      },
+      {
+        "src": "icons/icon-512x512.png",
+        "sizes": "512x512",
+        "type": "image/png"
+      }
+    ]
+  }
+  
