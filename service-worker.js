@@ -1,4 +1,4 @@
-const CACHE_NAME = 'drinking-game-cache-v2'; // Increment the version number
+const CACHE_NAME = 'drinking-game-cache'; // Increment the version number
 const urlsToCache = [
     './',
     './index.html',
