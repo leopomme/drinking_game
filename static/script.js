@@ -1,7 +1,7 @@
 // Global Variables
+let currentPlayerIndex = -1; // Initialize to -1 so that it starts from 0 on the first turn
 let currentPlayerName = '';
 let timerInterval;
-let timerPaused = false;
 let timerTime = 0; // in seconds
 const timerDuration = 120; // 2 minutes in seconds
 let playerStats = {};
@@ -16,18 +16,20 @@ function openSettings() {
     populatePlayerList();
 }
 
-// Close the settings menu and update conditions
+// Close the settings menu
 function closeSettings() {
     const settingsElement = document.getElementById('settings');
     settingsElement.style.display = 'none';
-    updateConditions();
 }
 
 // Update the display with the current player's turn
 function updatePlayerTurn() {
     const playersContainer = document.getElementById('players');
     const playerElements = Array.from(playersContainer.getElementsByClassName('player'));
-    const currentPlayerIndex = Math.floor(Math.random() * playerElements.length);
+
+    // Increment currentPlayerIndex and wrap around if necessary
+    currentPlayerIndex = (currentPlayerIndex + 1) % playerElements.length;
+
     currentPlayerName = playerElements[currentPlayerIndex].querySelector('span').innerText;
 
     const playerTurnDiv = document.getElementById('player-turn');
@@ -42,42 +44,21 @@ function startTimerBar() {
         clearInterval(timerInterval);
     }
     timerTime = 0;
-    timerPaused = false;
     const timerBar = document.getElementById('timer-bar');
     timerBar.style.width = '0%';
     timerBar.style.transition = 'none';
     timerBar.classList.remove('timer-full');
 
     timerInterval = setInterval(() => {
-        if (!timerPaused) {
-            timerTime++;
-            const percentage = (timerTime / timerDuration) * 100;
-            timerBar.style.width = percentage + '%';
+        timerTime++;
+        const percentage = (timerTime / timerDuration) * 100;
+        timerBar.style.width = percentage + '%';
 
-            if (timerTime >= timerDuration) {
-                clearInterval(timerInterval);
-                timerBarFull();
-            }
+        if (timerTime >= timerDuration) {
+            clearInterval(timerInterval);
+            timerBarFull();
         }
     }, 1000); // update every second
-}
-
-function pauseTimerBar() {
-    timerPaused = true;
-}
-
-function resumeTimerBar() {
-    timerPaused = false;
-}
-
-function resetTimerBar() {
-    clearInterval(timerInterval);
-    timerTime = 0;
-    timerPaused = false;
-    const timerBar = document.getElementById('timer-bar');
-    timerBar.style.width = '0%';
-    timerBar.classList.remove('timer-full');
-    startTimerBar();
 }
 
 function timerBarFull() {
@@ -85,18 +66,23 @@ function timerBarFull() {
     const timerBar = document.getElementById('timer-bar');
     timerBar.classList.add('timer-full');
     alert(`${currentPlayerName}, time's up! Time to drink!`);
+    // Auto-reset the timer after the alert is closed
+    startTimerBar();
 }
 
 // Trigger the drinking action and update the player states
 function timeToSip() {
     const currentPlayerIndex = updatePlayerTurn();
+    // Update conditions for the new turn
+    updateConditions(true);
+
     const playersContainer = document.getElementById('players');
     const playerElements = playersContainer.getElementsByClassName('player');
     currentPlayerName = playerElements[currentPlayerIndex].querySelector('span').innerText;
     const difficulty = parseFloat(document.getElementById('difficulty').value);
 
     if (enableSpecialAbilities) {
-        assignSpecialAbility(currentPlayerName);
+        // assignSpecialAbility(currentPlayerName); // Removed in favor of the wheel
     } else {
         const abilitiesContainer = document.getElementById('special-abilities');
         abilitiesContainer.innerHTML = '';
@@ -151,6 +137,7 @@ function addPlayer() {
     playersContainer.appendChild(newPlayer);
     playerStats[playerName] = { totalDrinks: 0 };
     updatePlayerDrinkTracker();
+    currentPlayerIndex = -1; // Reset to start from the first player
 }
 
 // Edit an existing player's name
@@ -201,10 +188,11 @@ function removePlayer(playerName) {
 
     populatePlayerList();
     updatePlayerDrinkTracker();
+    currentPlayerIndex = -1; // Reset to start from the first player
 }
 
 // Update the game conditions based on settings
-function updateConditions() {
+function updateConditions(isDuringGameplay = false) {
     const conditionsContainer = document.getElementById('conditions');
     const selectedConditionsCount = parseInt(document.getElementById('conditions-select').value, 10);
     conditionsContainer.innerHTML = '';
@@ -220,6 +208,11 @@ function updateConditions() {
             conditionsContainer.appendChild(conditionElement);
         });
     }
+
+    // Close settings menu if not during gameplay
+    if (!isDuringGameplay) {
+        closeSettings();
+    }
 }
 
 // Save the settings and close the settings menu
@@ -229,40 +222,110 @@ function saveSettings() {
     enableTimer = document.getElementById('enable-timer').checked;
 
     const timerBarContainer = document.getElementById('drink-timer');
-    const timerControls = document.querySelector('.timer-controls');
+
     if (enableTimer) {
         timerBarContainer.style.display = 'block';
-        timerControls.style.display = 'flex';
         startTimerBar();
     } else {
         timerBarContainer.style.display = 'none';
-        timerControls.style.display = 'none';
         clearInterval(timerInterval);
     }
 
-    closeSettings();
+    currentPlayerIndex = -1; // Reset to start from the first player
+    updateConditions();
 }
 
-// Assign a random special ability to the current player
+// Special Abilities List
 const specialAbilities = [
-    'Swap Sips: Allows the player to swap their sips with another player\'s.',
-    'Double Trouble: Doubles the number of sips another player must take for the next round.',
-    'Skip or Reverse: Skip a turn or reverse the play order.',
-    'Shield: Protects the player from taking sips for one round.',
-    // Feel free to add more abilities
+    'Double Trouble I: Double the number of sips another player must take. The rule only applies for the current round and has no further effect.',
+    'Double Trouble II: Double the number of sips another player must take. The effect lasts until the player you targeted completes their next turn.',
+    'Double Trouble III: Double the number of sips another player must take. The effect remains in play until it is your turn again.',
+    'Double Trouble IV: Double the number of sips another player must take. The effect remains until the end of the game.',
+    
+    'Reverse Double Trouble I: Double the number of sips you must take for this round.',
+    'Reverse Double Trouble III: Double the number of sips you must take until your next turn.',
+
+    'Swap Sips I: Swap your sips with another player. The effect only applies for the current round.',
+    'Swap Sips II: Swap your sips with another player. The effect lasts until the player you targeted completes their next turn.',
+    'Swap Sips III: Swap your sips with another player. The effect remains until your next turn.',
+    'Swap Sips IV: Swap your sips with another player. The effect lasts until the end of the game.',
+
+    'Democracy I: Choose a player. You and the others vote whether to remove the player’s sips, leave the number unchanged, or double the sips. The effect only applies for the current round.',
+    'Democracy II: Choose a player. You and the others vote whether to remove the player’s sips, leave the number unchanged, or double the sips. The effect lasts until the player’s next turn.',
+    'Democracy III: Choose a player. You and the others vote whether to remove the player’s sips, leave the number unchanged, or double the sips. The effect remains in play until your next turn.',
+    'Democracy IV: Choose a player. You and the others vote whether to remove the player’s sips, leave the number unchanged, or double the sips. The effect remains until the end of the game.',
+    'Democracy V: Choose a player. You and the others vote whether this player should down your entire drink or not.',
+
+    'Reverse Democracy I: The others vote whether to remove your sips, leave the number unchanged, or double your sips. The rule only applies for the current round.',
+    'Reverse Democracy II: The others vote whether to remove your sips, leave the number unchanged, or double your sips. The effect lasts until your next turn.',
+    'Reverse Democracy III: The others vote whether to remove your sips, leave the number unchanged, or double your sips. The effect lasts until the end of the game.',
+    'Reverse Democracy V: The others vote whether you must down your entire drink or not.',
+
+    'Full Chug: Force another player to down their entire drink.',
+    'Reverse Full Chug: You must down your entire drink.',
+    'Communist Full Chug: Everyone at the table must down their entire drink.',
+
+    'Bijection I: Choose two players. They must drink the higher number of sips between them. The effect only applies for the current round.',
+    'Bijection II: Choose two players. They must drink the higher number of sips between them until the player you targeted completes their next turn.',
+    'Bijection III: Choose two players. They must drink the higher number of sips between them until your next turn.',
+    'Bijection IV: Choose two players. They must drink the higher number of sips between them until the end of the game.',
+
+    'Reverse Bijection I: Choose a player to join you in a bijection. The effect only applies for the current round.',
+    'Reverse Bijection II: Choose a player to join you in a bijection. The effect lasts until the player you targeted completes their next turn.',
+    'Reverse Bijection III: Choose a player to join you in a bijection. The effect lasts until your next turn.',
+    
+    'Shield I: Protect yourself from drinking for the current round.',
+    'Shield II: Protect yourself from drinking until your next turn.'
 ];
 
-function assignSpecialAbility(playerName) {
-    const abilitiesContainer = document.getElementById('special-abilities');
-    abilitiesContainer.innerHTML = ''; // Clear previous abilities
 
-    const randomAbilityIndex = Math.floor(Math.random() * specialAbilities.length);
-    const ability = specialAbilities[randomAbilityIndex];
+// Create the wheel slices
+function createWheel() {
+    const wheel = document.querySelector('.wheel');
+    const numberOfSlices = specialAbilities.length;
+    const sliceDegree = 360 / numberOfSlices;
 
-    const abilityElement = document.createElement('div');
-    abilityElement.className = 'ability';
-    abilityElement.innerHTML = `<strong>${playerName}'s Ability:</strong><br>${ability}`;
-    abilitiesContainer.appendChild(abilityElement);
+    // Remove existing slices
+    wheel.innerHTML = '<div class="wheel-arrow">▲</div>';
+
+    specialAbilities.forEach((ability, index) => {
+        const slice = document.createElement('div');
+        slice.className = 'wheel-slice';
+        slice.style.transform = `rotate(${index * sliceDegree}deg) skewY(${90 - sliceDegree}deg)`;
+        slice.style.backgroundColor = index % 2 === 0 ? '#fff3e0' : '#ffe0b2';
+
+        const text = document.createElement('div');
+        text.className = 'slice-text';
+        text.style.transform = `rotate(${sliceDegree / 2}deg)`;
+        text.innerText = ability.split(':')[0]; // Show ability name
+        slice.appendChild(text);
+        wheel.appendChild(slice);
+    });
+}
+
+let spinning = false;
+
+function spinWheel() {
+    if (spinning) return; // Prevent multiple spins at the same time
+    spinning = true;
+
+    const wheel = document.querySelector('.wheel');
+    const randomDegree = Math.floor(Math.random() * 360) + 720; // At least 2 full rotations
+    wheel.style.transition = 'transform 4s cubic-bezier(0.33, 1, 0.68, 1)';
+    wheel.style.transform = `rotate(${randomDegree}deg)`;
+
+    // Determine which ability was selected
+    setTimeout(() => {
+        const normalizedDegree = randomDegree % 360;
+        const index = Math.floor((360 - normalizedDegree + (360 / specialAbilities.length) / 2) % 360 / (360 / specialAbilities.length));
+        const selectedAbility = specialAbilities[index];
+
+        alert(`${currentPlayerName} got: ${selectedAbility}`);
+
+        // Apply the ability (if needed)
+
+        spinning = false;
+    }, 4000); // Match the transition duration
 }
 
 // Update the player drink tracker
@@ -274,13 +337,14 @@ function updatePlayerDrinkTracker() {
         const playerStat = playerStats[playerName];
         const playerElement = document.createElement('div');
         playerElement.className = 'player-stat';
-        playerElement.innerHTML = `<span>${playerName}</span>: <span>${playerStat.totalDrinks}</span>`;
+        playerElement.innerHTML = `<span>${playerName}</span>: <span>${playerStat.totalDrinks} 🍺</span>`;
         trackerContainer.appendChild(playerElement);
     }
 }
 
 // Start the timer bar on page load if enabled
 window.onload = function() {
+    createWheel();
     if (enableTimer) {
         startTimerBar();
     }

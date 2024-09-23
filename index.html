@@ -28,12 +28,7 @@
             <div id="timer-bar" class="timer-bar"></div>
         </div>
 
-        <!-- Timer Controls -->
-        <div class="timer-controls">
-            <button id="pause-timer" onclick="pauseTimerBar()">Pause</button>
-            <button id="resume-timer" onclick="resumeTimerBar()">Resume</button>
-            <button id="reset-timer" onclick="resetTimerBar()">Reset</button>
-        </div>
+        <!-- Timer Controls (Removed) -->
     </header>
 
     <main>
@@ -47,7 +42,13 @@
                 <div class="game-container">
                     <!-- Special Abilities -->
                     <div class="special-abilities" id="special-abilities">
-                        <!-- Special abilities will be displayed here -->
+                        <!-- Wheel of Fortune -->
+                        <div class="wheel-container">
+                            <div class="wheel" onclick="spinWheel()">
+                                <div class="wheel-arrow">▲</div>
+                                <!-- Wheel slices will be added dynamically -->
+                            </div>
+                        </div>
                     </div>
 
                     <!-- Center Content -->
@@ -130,7 +131,7 @@
             });
           });
         }
-      </script>      
+    </script>      
 
 </body>
 </html>

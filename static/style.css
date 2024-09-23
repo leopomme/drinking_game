@@ -62,17 +62,9 @@ header {
     100% { background-color: green; }
 }
 
-/* Timer Controls */
+/* Timer Controls (Removed) */
 .timer-controls {
-    display: flex;
-    justify-content: center;
-    margin-top: 10px;
-}
-
-.timer-controls button {
-    margin: 0 5px;
-    padding: 5px 10px;
-    font-size: 14px;
+    display: none;
 }
 
 /* Main Container */
@@ -108,6 +100,55 @@ header {
     margin-bottom: 10px;
 }
 
+/* Wheel of Fortune Styles */
+.wheel-container {
+    position: relative;
+    width: 200px;
+    height: 200px;
+    margin: 0 auto;
+}
+
+.wheel {
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    border: 5px solid #ffb74d;
+    position: relative;
+    overflow: hidden;
+    transform: rotate(0deg);
+    transition: transform 4s cubic-bezier(0.33, 1, 0.68, 1);
+    cursor: pointer;
+}
+
+.wheel-arrow {
+    position: absolute;
+    top: -20px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 24px;
+    color: red;
+}
+
+.wheel-slice {
+    position: absolute;
+    width: 50%;
+    height: 50%;
+    background-color: #fff3e0;
+    transform-origin: 100% 100%;
+    border: 1px solid #ffb74d;
+}
+
+.slice-text {
+    position: absolute;
+    top: 50%;
+    left: 60%;
+    transform: rotate(0deg) translate(-50%, -50%);
+    transform-origin: 0% 0%;
+    font-size: 12px;
+    text-align: center;
+    width: 80px;
+}
+
 /* Center Content */
 .center-content {
     width: 60%;
@@ -132,7 +173,7 @@ header {
 
 .header {
     display: flex;
-    flex-direction: column; /* Change to column to stack conditions */
+    flex-direction: column;
     justify-content: space-between;
     width: 100%;
     padding: 10px;
@@ -144,10 +185,11 @@ header {
 
 .menu-icon {
     cursor: pointer;
-    font-size: 36px; /* Increase size of the menu icon */
+    font-size: 36px;
     position: absolute;
     right: 10px;
-    top: 10px; /* Ensure it stays on the top right */
+    top: 10px;
+    color: black; /* Set the color to black */
 }
 
 /* Main Content */
@@ -234,10 +276,10 @@ header {
 }
 
 .settings-content {
-    background-color: #e0e0e0; /* Darker gray background */
-    padding: 40px; /* Increase padding for larger settings box */
+    background-color: #e0e0e0;
+    padding: 40px;
     border-radius: 10px;
-    max-width: 500px; /* Increase maximum width */
+    max-width: 500px;
     width: 100%;
 }
 
@@ -288,8 +330,8 @@ header {
     display: flex;
     flex-wrap: wrap;
     gap: 10px;
-    max-height: 300px; /* Set a maximum height */
-    overflow-y: scroll; /* Enable vertical scrolling */
+    max-height: 300px;
+    overflow-y: scroll;
 }
 
 .player-tag {
@@ -299,7 +341,7 @@ header {
     padding: 5px 10px;
     border-radius: 10px;
     border: 2px solid #ffb74d;
-    width: 150px; /* Set a fixed width for better alignment */
+    width: 150px;
     justify-content: space-between;
 }
 
