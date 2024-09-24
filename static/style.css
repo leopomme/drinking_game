@@ -100,11 +100,22 @@ header {
     margin-bottom: 10px;
 }
 
-/* Wheel of Fortune Styles */
+/* Ability Description */
+.ability-description {
+    margin-top: 10px;
+    padding: 10px;
+    background-color: #fff3e0;
+    border: 2px solid #ffb74d;
+    border-radius: 10px;
+    font-size: 14px;
+    color: #000;
+  }
+  
+
 .wheel-container {
     position: relative;
-    width: 200px;
-    height: 200px;
+    width: 150px; /* Reduce the width */
+    height: 150px; /* Reduce the height */
     margin: 0 auto;
 }
 
@@ -129,26 +140,30 @@ header {
     color: red;
 }
 
+/* Wheel Slice */
 .wheel-slice {
     position: absolute;
     width: 50%;
     height: 50%;
-    background-color: #fff3e0;
     transform-origin: 100% 100%;
-    border: 1px solid #ffb74d;
-}
-
-.slice-text {
+    border-top-left-radius: 100%; /* Make slices rounded */
+    border: 1px solid #fff; /* White border for separation */
+    overflow: hidden;
+  }
+  
+  /* Slice Text */
+  .slice-text {
     position: absolute;
     top: 50%;
     left: 60%;
     transform: rotate(0deg) translate(-50%, -50%);
     transform-origin: 0% 0%;
-    font-size: 12px;
+    font-size: 10px;
     text-align: center;
-    width: 80px;
-}
-
+    width: 60px;
+    color: #000; /* Ensure text is visible on both backgrounds */
+  }
+  
 /* Center Content */
 .center-content {
     width: 60%;

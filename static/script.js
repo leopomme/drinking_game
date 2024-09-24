@@ -279,54 +279,78 @@ const specialAbilities = [
 ];
 
 
-// Create the wheel slices
 function createWheel() {
     const wheel = document.querySelector('.wheel');
-    const numberOfSlices = specialAbilities.length;
+  
+    // Decide the number of slices to display, e.g., 6
+    const numberOfSlices = 6;
+  
+    // Randomly shuffle and select abilities
+    const shuffledAbilities = specialAbilities.sort(() => 0.5 - Math.random());
+    const selectedAbilities = shuffledAbilities.slice(0, numberOfSlices);
+  
     const sliceDegree = 360 / numberOfSlices;
-
+  
     // Remove existing slices
     wheel.innerHTML = '<div class="wheel-arrow">▲</div>';
-
-    specialAbilities.forEach((ability, index) => {
-        const slice = document.createElement('div');
-        slice.className = 'wheel-slice';
-        slice.style.transform = `rotate(${index * sliceDegree}deg) skewY(${90 - sliceDegree}deg)`;
-        slice.style.backgroundColor = index % 2 === 0 ? '#fff3e0' : '#ffe0b2';
-
-        const text = document.createElement('div');
-        text.className = 'slice-text';
-        text.style.transform = `rotate(${sliceDegree / 2}deg)`;
-        text.innerText = ability.split(':')[0]; // Show ability name
-        slice.appendChild(text);
-        wheel.appendChild(slice);
+  
+    selectedAbilities.forEach((ability, index) => {
+      const slice = document.createElement('div');
+      slice.className = 'wheel-slice';
+      slice.style.transform = `rotate(${index * sliceDegree}deg) skewY(${90 - sliceDegree}deg)`;
+  
+      // Alternate colors between dark and light
+      const lightColor = '#ffe0b2'; // Light color
+      const darkColor = '#ffb74d';  // Dark color
+      slice.style.backgroundColor = index % 2 === 0 ? lightColor : darkColor;
+  
+      const text = document.createElement('div');
+      text.className = 'slice-text';
+      text.style.transform = `rotate(${sliceDegree / 2}deg)`;
+      text.innerText = ability.split(':')[0]; // Show only the title
+      slice.appendChild(text);
+      wheel.appendChild(slice);
     });
-}
+  
+    // Store the selected abilities for use when determining the result
+    wheel.dataset.selectedAbilities = JSON.stringify(selectedAbilities);
+  }
+  
+
 
 let spinning = false;
 
 function spinWheel() {
-    if (spinning) return; // Prevent multiple spins at the same time
+    if (spinning) return;
     spinning = true;
-
+  
+    createWheel(); // Refresh the wheel with new abilities
+  
     const wheel = document.querySelector('.wheel');
+    const selectedAbilities = JSON.parse(wheel.dataset.selectedAbilities);
+    const numberOfSlices = selectedAbilities.length;
+    const sliceDegree = 360 / numberOfSlices;
     const randomDegree = Math.floor(Math.random() * 360) + 720; // At least 2 full rotations
+  
     wheel.style.transition = 'transform 4s cubic-bezier(0.33, 1, 0.68, 1)';
     wheel.style.transform = `rotate(${randomDegree}deg)`;
-
+  
     // Determine which ability was selected
     setTimeout(() => {
-        const normalizedDegree = randomDegree % 360;
-        const index = Math.floor((360 - normalizedDegree + (360 / specialAbilities.length) / 2) % 360 / (360 / specialAbilities.length));
-        const selectedAbility = specialAbilities[index];
-
-        alert(`${currentPlayerName} got: ${selectedAbility}`);
-
-        // Apply the ability (if needed)
-
-        spinning = false;
+      const totalDegreesSpun = randomDegree % 360;
+      const normalizedDegrees = (360 - totalDegreesSpun + sliceDegree / 2) % 360;
+      const index = Math.floor(normalizedDegrees / sliceDegree) % numberOfSlices;
+      const selectedAbility = selectedAbilities[index];
+  
+      // Display the ability description below the wheel
+      const abilityDescriptionDiv = document.getElementById('ability-description');
+      abilityDescriptionDiv.innerHTML = `<strong>${currentPlayerName} got:</strong> ${selectedAbility}`;
+  
+      spinning = false;
     }, 4000); // Match the transition duration
-}
+  }
+  
+
 
 // Update the player drink tracker
 function updatePlayerDrinkTracker() {
