@@ -62,13 +62,43 @@ header {
     100% { background-color: green; }
 }
 
-/* Timer Controls (Removed) */
-.timer-controls {
-    display: none;
+/* Menu Icon */
+.menu-icon {
+    cursor: pointer;
+    font-size: 64px; /* Increase size */
+    position: fixed;
+    top: 10px;
+    right: 10px;
+    color: black;
+    z-index: 1000;
 }
 
-/* Main Container */
+/* Conditions Container */
+.conditions-container {
+    width: 100%;
+    background-color: #ffb74d;
+    color: white;
+    padding: 20px;
+    font-size: 20px;
+    border-radius: 10px;
+    margin-top: 100px;
+}
+
+.conditions-container ul {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+}
+
+/* Main */
+main {
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+}
+
 .container {
+    width: 800px;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -76,8 +106,7 @@ header {
     background-color: #fff3e0;
     border-radius: 10px;
     max-width: 1200px;
-    width: 100%;
-    margin-top: 200px; /* To avoid overlap with fixed header */
+    margin-top: 200px;
 }
 
 /* Game Container */
@@ -86,39 +115,21 @@ header {
     width: 100%;
 }
 
-/* Special Abilities */
+/* Special Abilities (Wheel Column) */
 .special-abilities {
-    width: 20%;
+    width: 30%;
     padding: 10px;
 }
 
-.ability {
-    background-color: #fff3e0;
-    border: 2px solid #ffb74d;
-    border-radius: 10px;
-    padding: 10px;
-    margin-bottom: 10px;
-}
-
-/* Ability Description */
-.ability-description {
-    margin-top: 10px;
-    padding: 10px;
-    background-color: #fff3e0;
-    border: 2px solid #ffb74d;
-    border-radius: 10px;
-    font-size: 14px;
-    color: #000;
-  }
-  
-
+/* Wheel Container */
 .wheel-container {
     position: relative;
-    width: 150px; /* Reduce the width */
-    height: 150px; /* Reduce the height */
+    width: 300px;
+    height: 300px;
     margin: 0 auto;
 }
 
+/* Wheel */
 .wheel {
     width: 100%;
     height: 100%;
@@ -127,7 +138,7 @@ header {
     position: relative;
     overflow: hidden;
     transform: rotate(0deg);
-    transition: transform 4s cubic-bezier(0.33, 1, 0.68, 1);
+    transition: transform 2s cubic-bezier(0.33, 1, 0.68, 1);
     cursor: pointer;
 }
 
@@ -146,71 +157,39 @@ header {
     width: 50%;
     height: 50%;
     transform-origin: 100% 100%;
-    border-top-left-radius: 100%; /* Make slices rounded */
-    border: 1px solid #fff; /* White border for separation */
+    border-top-left-radius: 100%;
+    border: 1px solid #fff;
     overflow: hidden;
-  }
-  
-  /* Slice Text */
-  .slice-text {
+}
+
+/* Slice Text */
+.slice-text {
     position: absolute;
     top: 50%;
     left: 60%;
     transform: rotate(0deg) translate(-50%, -50%);
     transform-origin: 0% 0%;
-    font-size: 10px;
+    font-size: 14px;
     text-align: center;
-    width: 60px;
-    color: #000; /* Ensure text is visible on both backgrounds */
-  }
-  
-/* Center Content */
-.center-content {
-    width: 60%;
-    padding: 10px;
-    text-align: center;
+    width: 80px;
+    color: #000;
 }
 
-/* Player Drink Tracker */
-.player-drink-tracker {
-    width: 20%;
+/* Ability Description */
+.ability-description {
+    margin-top: 10px;
     padding: 10px;
-}
-
-.player-stat {
     background-color: #fff3e0;
     border: 2px solid #ffb74d;
     border-radius: 10px;
-    padding: 5px;
-    margin-bottom: 5px;
+    font-size: 16px;
+    color: #000;
 }
 
-
-.header {
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    width: 100%;
+/* Center Content */
+.center-content {
+    width: 70%;
     padding: 10px;
-    background-color: #ffb74d;
-    color: white;
-    border-radius: 10px 10px 0 0;
-    position: relative;
-}
-
-.menu-icon {
-    cursor: pointer;
-    font-size: 36px;
-    position: absolute;
-    right: 10px;
-    top: 10px;
-    color: black; /* Set the color to black */
-}
-
-/* Main Content */
-.main {
-    margin-top: 20px;
-    width: 100%;
     text-align: center;
 }
 
@@ -275,6 +254,31 @@ header {
     display: flex;
     gap: 5px;
     margin-top: 5px;
+}
+
+/* Player Drink Tracker */
+.player-drink-tracker {
+    width: 200px;
+    padding: 10px;
+    margin-left: 20px;
+}
+
+.player-stat {
+    background-color: #fff3e0;
+    border: 2px solid #ffb74d;
+    border-radius: 10px;
+    padding: 10px;
+    margin-bottom: 10px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 18px;
+}
+
+/* Sips Chart */
+.player-drink-tracker canvas {
+    width: 100%;
+    height: 200px;
 }
 
 /* Settings */
@@ -370,18 +374,6 @@ header {
     color: #ff9800;
     cursor: pointer;
     font-size: 16px;
-}
-
-.conditions {
-    margin-top: 20px;
-}
-
-.conditions select {
-    width: 100%;
-    padding: 10px;
-    font-size: 16px;
-    border-radius: 10px;
-    border: 2px solid #ffb74d;
 }
 
 button {

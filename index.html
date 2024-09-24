@@ -16,6 +16,8 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="default">
     <meta name="apple-mobile-web-app-title" content="Drinking Game">
 
+    <!-- Include Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
 
@@ -28,28 +30,28 @@
             <div id="timer-bar" class="timer-bar"></div>
         </div>
 
-        <!-- Timer Controls (Removed) -->
+        <!-- Menu Icon -->
+        <div class="menu-icon" onclick="openSettings()">☰</div>
     </header>
+
+    <!-- Extra Rules Block -->
+    <div class="conditions-container">
+        <ul id="conditions"></ul>
+    </div>
 
     <main>
         <section class="container">
-            <div class="header">
-                <ul id="conditions"></ul>
-                <div class="menu-icon" onclick="openSettings()">☰</div>
-            </div>
-
             <div class="main">
                 <div class="game-container">
-                    <!-- Special Abilities -->
+                    <!-- Special Abilities (Wheel and Description) -->
                     <div class="special-abilities" id="special-abilities">
-                        <!-- Wheel of Fortune -->
                         <div class="wheel-container">
-                            <!-- Ability Description -->
-                            <div id="ability-description" class="ability-description"></div>
-                            <div class="wheel" onclick="spinWheel()">
+                            <div class="wheel">
                                 <div class="wheel-arrow">▲</div>
                                 <!-- Wheel slices will be added dynamically -->
                             </div>
+                            <!-- Ability Description -->
+                            <div id="ability-description" class="ability-description"></div>
                         </div>
                     </div>
 
@@ -72,14 +74,15 @@
                             </div>
                         </div>
                     </div>
-
-                    <!-- Player Drink Tracker -->
-                    <div class="player-drink-tracker" id="player-drink-tracker">
-                        <!-- Player drink tracker will be displayed here -->
-                    </div>
                 </div>
             </div>
         </section>
+
+        <!-- Player Drink Tracker -->
+        <div class="player-drink-tracker" id="player-drink-tracker">
+            <!-- Player drink tracker will be displayed here -->
+            <canvas id="sipsChart"></canvas>
+        </div>
     </main>
 
     <aside>
@@ -100,15 +103,7 @@
                     <label>Remove players:</label>
                     <div id="player-list"></div>
                 </div>
-                <div class="conditions">
-                    <label for="conditions-select">Nb of extra rules:</label>
-                    <select id="conditions-select" name="conditions-select">
-                        <option value="0">0</option>
-                        <option value="1">1</option>
-                        <option value="2">2</option>
-                        <option value="3">3</option>
-                    </select>
-                </div>
+                <!-- Remove conditions selection -->
                 <div class="features">
                     <label><input type="checkbox" id="enable-questions" checked> Enable Questions</label><br>
                     <label><input type="checkbox" id="enable-special-abilities" checked> Enable Special Abilities</label><br>

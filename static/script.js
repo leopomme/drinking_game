@@ -8,6 +8,9 @@ let playerStats = {};
 let enableQuestions = true;
 let enableSpecialAbilities = true;
 let enableTimer = true;
+let turnNumber = 0;
+let sipsPerTurn = {}; // { turnNumber: { playerName: sips, ... }, ... }
+
 
 // Open the settings menu
 function openSettings() {
@@ -70,16 +73,19 @@ function timerBarFull() {
     startTimerBar();
 }
 
-// Trigger the drinking action and update the player states
 function timeToSip() {
+    turnNumber++; // Increment turn number
     const currentPlayerIndex = updatePlayerTurn();
-    // Update conditions for the new turn
     updateConditions(true);
+    spinWheel();
 
     const playersContainer = document.getElementById('players');
     const playerElements = playersContainer.getElementsByClassName('player');
     currentPlayerName = playerElements[currentPlayerIndex].querySelector('span').innerText;
     const difficulty = parseFloat(document.getElementById('difficulty').value);
+
+    // Initialize sips data for this turn
+    sipsPerTurn[turnNumber] = {};
 
     if (enableSpecialAbilities) {
         // assignSpecialAbility(currentPlayerName); // Removed in favor of the wheel
@@ -113,9 +119,13 @@ function timeToSip() {
             playerStats[playerName] = { totalDrinks: 0 };
         }
         playerStats[playerName].totalDrinks += sips;
+
+        // Record sips for this turn
+        sipsPerTurn[turnNumber][playerName] = sips;
     });
 
     updatePlayerDrinkTracker();
+    updateSipsChart(); // Render the graph
 }
 
 // Handle spacebar key press for rolling the dice
@@ -194,7 +204,7 @@ function removePlayer(playerName) {
 // Update the game conditions based on settings
 function updateConditions(isDuringGameplay = false) {
     const conditionsContainer = document.getElementById('conditions');
-    const selectedConditionsCount = parseInt(document.getElementById('conditions-select').value, 10);
+    const selectedConditionsCount = 1; // Always set to 1
     conditionsContainer.innerHTML = '';
 
     if (enableQuestions) {
@@ -214,6 +224,7 @@ function updateConditions(isDuringGameplay = false) {
         closeSettings();
     }
 }
+
 
 // Save the settings and close the settings menu
 function saveSettings() {
@@ -323,32 +334,34 @@ let spinning = false;
 function spinWheel() {
     if (spinning) return;
     spinning = true;
-  
-    createWheel(); // Refresh the wheel with new abilities
-  
+
+    createWheel(); // Regenerate the wheel with new abilities
+
     const wheel = document.querySelector('.wheel');
     const selectedAbilities = JSON.parse(wheel.dataset.selectedAbilities);
     const numberOfSlices = selectedAbilities.length;
     const sliceDegree = 360 / numberOfSlices;
     const randomDegree = Math.floor(Math.random() * 360) + 720; // At least 2 full rotations
-  
-    wheel.style.transition = 'transform 4s cubic-bezier(0.33, 1, 0.68, 1)';
+
+    // Reduce spin duration to 2 seconds
+    wheel.style.transition = 'transform 2s cubic-bezier(0.33, 1, 0.68, 1)';
     wheel.style.transform = `rotate(${randomDegree}deg)`;
-  
+
     // Determine which ability was selected
     setTimeout(() => {
-      const totalDegreesSpun = randomDegree % 360;
-      const normalizedDegrees = (360 - totalDegreesSpun + sliceDegree / 2) % 360;
-      const index = Math.floor(normalizedDegrees / sliceDegree) % numberOfSlices;
-      const selectedAbility = selectedAbilities[index];
-  
-      // Display the ability description below the wheel
-      const abilityDescriptionDiv = document.getElementById('ability-description');
-      abilityDescriptionDiv.innerHTML = `<strong>${currentPlayerName} got:</strong> ${selectedAbility}`;
-  
-      spinning = false;
-    }, 4000); // Match the transition duration
-  }
+        const totalDegreesSpun = randomDegree % 360;
+        const normalizedDegrees = (360 - totalDegreesSpun + sliceDegree / 2) % 360;
+        const index = Math.floor(normalizedDegrees / sliceDegree) % numberOfSlices;
+        const selectedAbility = selectedAbilities[index];
+
+        // Display the ability description below the wheel
+        const abilityDescriptionDiv = document.getElementById('ability-description');
+        abilityDescriptionDiv.innerHTML = `<strong>${currentPlayerName} got:</strong> ${selectedAbility}`;
+
+        spinning = false;
+    }, 2000); // Match the reduced transition duration
+}
+
   
 
 
@@ -373,3 +386,74 @@ window.onload = function() {
         startTimerBar();
     }
 };
+
+function updateSipsChart() {
+    const ctx = document.getElementById('sipsChart').getContext('2d');
+
+    // Prepare data
+    const labels = Object.keys(sipsPerTurn); // Turn numbers
+    const datasets = [];
+
+    // Get list of all players
+    const players = Object.keys(playerStats);
+
+    players.forEach((playerName, idx) => {
+        const data = labels.map(turn => sipsPerTurn[turn][playerName] || 0);
+        datasets.push({
+            label: playerName,
+            data: data,
+            borderColor: getRandomColor(idx),
+            fill: false,
+        });
+    });
+
+    // Destroy previous chart instance if exists
+    if (window.sipsChartInstance) {
+        window.sipsChartInstance.destroy();
+    }
+
+    // Create new chart
+    window.sipsChartInstance = new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: labels,
+            datasets: datasets,
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            title: {
+                display: true,
+                text: 'Sips per Turn',
+            },
+            scales: {
+                x: {
+                    title: {
+                        display: true,
+                        text: 'Turn Number',
+                    },
+                },
+                y: {
+                    title: {
+                        display: true,
+                        text: 'Number of Sips',
+                    },
+                    beginAtZero: true,
+                },
+            },
+        },
+    });
+}
+
+// Utility function to generate random colors
+function getRandomColor(index) {
+    const colors = [
+        '#e6194b', '#3cb44b', '#ffe119', '#4363d8',
+        '#f58231', '#911eb4', '#46f0f0', '#f032e6',
+        '#bcf60c', '#fabebe', '#008080', '#e6beff',
+        '#9a6324', '#fffac8', '#800000', '#aaffc3',
+        '#808000', '#ffd8b1', '#000075', '#808080',
+        '#ffffff', '#000000'
+    ];
+    return colors[index % colors.length];
+}
