@@ -77,7 +77,6 @@ function timerBarFull() {
     startTimerBar();
 }
 
-// Trigger the drinking action and update the player states
 function timeToSip() {
     const updatedPlayerIndex = updatePlayerTurn();
     if (updatedPlayerIndex === -1) return; // No players to proceed
@@ -85,9 +84,9 @@ function timeToSip() {
     // Update conditions for the new turn
     updateConditions(true);
 
-    // Spin the wheel automatically if special abilities are enabled
+    // Spin the tube automatically if special abilities are enabled
     if (enableSpecialAbilities) {
-        spinWheel();
+        spinTube();
     }
 
     const playersContainer = document.getElementById('players');
@@ -96,6 +95,7 @@ function timeToSip() {
     const difficulty = parseFloat(document.getElementById('difficulty').value);
 
     // Initialize sips data for this turn
+    turnNumber++; // Increment turnNumber here
     sipsPerTurn[turnNumber] = {};
 
     Array.from(playerElements).forEach((playerElement, index) => {
@@ -131,6 +131,7 @@ function timeToSip() {
     updatePlayerDrinkTracker();
     updateSipsChart(); // Render the graph
 }
+
 
 // Handle spacebar key press for rolling the dice
 document.addEventListener('keydown', (event) => {
@@ -246,8 +247,12 @@ function saveSettings() {
     }
 
     currentPlayerIndex = -1; // Reset to start from the first player
+    turnNumber = 0; // Reset turnNumber
+    sipsPerTurn = {}; // Clear previous sips data
     updateConditions();
+    updateSipsChart(); // Clear and update the graph
 }
+
 
 // Special Abilities List
 const specialAbilities = [
@@ -293,76 +298,57 @@ const specialAbilities = [
 ];
 
 
-// Create the wheel with a smaller number of random abilities
-function createWheel() {
-    const wheel = document.querySelector('.wheel');
 
-    // Decide the number of slices to display, e.g., 6
-    const numberOfSlices = 6;
+// New Rolling Tube Implementation
 
-    // Randomly shuffle and select abilities
+// Function to create the rolling tube with all abilities
+function createTube() {
+    const tube = document.querySelector('.tube');
+    tube.innerHTML = ''; // Clear existing abilities
+
+    // Shuffle the abilities to randomize the order
     const shuffledAbilities = specialAbilities.sort(() => 0.5 - Math.random());
-    const selectedAbilities = shuffledAbilities.slice(0, numberOfSlices);
 
-    const sliceDegree = 360 / numberOfSlices;
-
-    // Remove existing slices
-    wheel.innerHTML = '<div class="wheel-arrow">▲</div>';
-
-    selectedAbilities.forEach((ability, index) => {
-        const slice = document.createElement('div');
-        slice.className = 'wheel-slice';
-        slice.style.transform = `rotate(${index * sliceDegree}deg) skewY(${90 - sliceDegree}deg)`;
-
-        // Alternate colors between dark and light
-        const lightColor = '#ffe0b2'; // Light color
-        const darkColor = '#ffb74d';  // Dark color
-        slice.style.backgroundColor = index % 2 === 0 ? lightColor : darkColor;
-
-        const text = document.createElement('div');
-        text.className = 'slice-text';
-        text.style.transform = `rotate(${sliceDegree / 2}deg)`;
-        text.innerText = ability.split(':')[0]; // Show only the title
-        slice.appendChild(text);
-        wheel.appendChild(slice);
+    // Display all abilities in the tube
+    shuffledAbilities.forEach(ability => {
+        const abilitySpan = document.createElement('span');
+        abilitySpan.textContent = ability.split(':')[0]; // Display only the title
+        tube.appendChild(abilitySpan);
     });
 
-    // Store the selected abilities for use when determining the result
-    wheel.dataset.selectedAbilities = JSON.stringify(selectedAbilities);
+    // Store the shuffled abilities for use when determining the result
+    tube.dataset.selectedAbilities = JSON.stringify(shuffledAbilities);
 }
 
-let spinning = false;
+// Flag to prevent multiple simultaneous spins
+let spinningTube = false;
 
-function spinWheel() {
-    if (spinning) return;
-    spinning = true;
+function spinTube() {
+    if (spinningTube) return;
+    spinningTube = true;
 
-    createWheel(); // Regenerate the wheel with new abilities
+    createTube(); // Regenerate the tube with all abilities
 
-    const wheel = document.querySelector('.wheel');
-    const selectedAbilities = JSON.parse(wheel.dataset.selectedAbilities);
-    const numberOfSlices = selectedAbilities.length;
-    const sliceDegree = 360 / numberOfSlices;
-    const randomDegree = Math.floor(Math.random() * 360) + 720; // At least 2 full rotations
+    const tube = document.querySelector('.tube');
+    const selectedAbilities = JSON.parse(tube.dataset.selectedAbilities);
+    const numberOfAbilities = selectedAbilities.length;
+    const randomIndex = Math.floor(Math.random() * numberOfAbilities);
 
-    // Spin the wheel fast, stopping within 1 second
-    wheel.style.transition = 'transform 1s cubic-bezier(0.33, 1, 0.68, 1)';
-    wheel.style.transform = `rotate(${randomDegree}deg)`;
+    // Calculate the translation distance (assuming each span is 100px wide)
+    const translateX = -randomIndex * 100;
 
-    // Determine which ability was selected
+    // Apply the transform to spin the tube
+    tube.style.transform = `translateX(${translateX}px)`;
+
+    // After 1 second, display the selected ability
     setTimeout(() => {
-        const totalDegreesSpun = randomDegree % 360;
-        const normalizedDegrees = (360 - totalDegreesSpun + sliceDegree / 2) % 360;
-        const index = Math.floor(normalizedDegrees / sliceDegree) % numberOfSlices;
-        const selectedAbility = selectedAbilities[index];
-
-        // Display the ability description below the wheel
-        const abilityDescriptionDiv = document.getElementById('ability-description');
-        abilityDescriptionDiv.innerHTML = `<strong>Selected Ability:</strong> ${selectedAbility}`;
-
-        spinning = false;
-    }, 1000); // Match the reduced transition duration
+        const selectedAbility = selectedAbilities[randomIndex];
+        document.getElementById('selected-ability-name').textContent = selectedAbility.split(':')[0];
+        document.getElementById('ability-explanation').innerHTML = `<strong>${selectedAbility}</strong>`;
+        spinningTube = false;
+    }, 1000); // Match the transition duration in CSS
 }
+
 
 // Update the player drink tracker
 function updatePlayerDrinkTracker() {
@@ -378,6 +364,7 @@ function updatePlayerDrinkTracker() {
     }
 }
 
+// Update Sips Chart with cumulative data
 // Update Sips Chart with cumulative data
 function updateSipsChart() {
     const ctx = document.getElementById('sipsChart').getContext('2d');
@@ -401,7 +388,7 @@ function updateSipsChart() {
         totalSips[player] = 0;
     });
 
-    Object.keys(sipsPerTurn).forEach(turn => {
+    Object.keys(sipsPerTurn).sort((a, b) => a - b).forEach(turn => { // Ensure turns are in order
         players.forEach(player => {
             totalSips[player] += sipsPerTurn[turn][player] || 0;
             cumulativeSips[player].push(totalSips[player]);
@@ -463,6 +450,7 @@ function updateSipsChart() {
     });
 }
 
+
 // Utility function to generate distinct colors for each player
 function getColor(index) {
     const colors = [
@@ -479,7 +467,7 @@ function getColor(index) {
 // Start the timer bar on page load if enabled
 window.onload = function() {
     updateConditions();
-    createWheel();
+    createTube();
     if (enableTimer) {
         startTimerBar();
     }
