@@ -11,7 +11,6 @@ body {
     display: flex;
     flex-direction: column;
     align-items: center;
-    justify-content: flex-start;
     min-height: 100vh;
 }
 
@@ -24,6 +23,7 @@ header {
     position: fixed;
     top: 0;
     left: 0;
+    z-index: 1000;
 }
 
 /* Player Turn Display */
@@ -65,12 +65,12 @@ header {
 /* Menu Icon */
 .menu-icon {
     cursor: pointer;
-    font-size: 64px; /* Increase size */
+    font-size: 64px;
     position: fixed;
     top: 10px;
     right: 10px;
     color: black;
-    z-index: 1000;
+    z-index: 1001;
 }
 
 /* Conditions Container */
@@ -81,7 +81,8 @@ header {
     padding: 20px;
     font-size: 20px;
     border-radius: 10px;
-    margin-top: 100px;
+    margin-top: 150px;
+    text-align: center;
 }
 
 .conditions-container ul {
@@ -90,46 +91,42 @@ header {
     padding: 0;
 }
 
+.conditions-container ul li {
+    display: inline-block;
+}
+
 /* Main */
 main {
     display: flex;
     justify-content: center;
     align-items: flex-start;
+    width: 100%;
+    margin-top: 20px;
 }
 
-.container {
-    width: 800px;
+.main-wrapper {
+    display: flex;
+    width: 100%;
+    justify-content: center;
+}
+
+/* Wheel Section */
+.wheel-section {
+    width: 25%;
     display: flex;
     flex-direction: column;
     align-items: center;
-    padding: 40px;
-    background-color: #fff3e0;
-    border-radius: 10px;
-    max-width: 1200px;
-    margin-top: 200px;
-}
-
-/* Game Container */
-.game-container {
-    display: flex;
-    width: 100%;
-}
-
-/* Special Abilities (Wheel Column) */
-.special-abilities {
-    width: 30%;
-    padding: 10px;
+    margin-right: 20px;
 }
 
 /* Wheel Container */
 .wheel-container {
     position: relative;
-    width: 300px;
-    height: 300px;
+    width: 250px;
+    height: 250px;
     margin: 0 auto;
 }
 
-/* Wheel */
 .wheel {
     width: 100%;
     height: 100%;
@@ -138,8 +135,7 @@ main {
     position: relative;
     overflow: hidden;
     transform: rotate(0deg);
-    transition: transform 2s cubic-bezier(0.33, 1, 0.68, 1);
-    cursor: pointer;
+    transition: transform 1s cubic-bezier(0.33, 1, 0.68, 1);
 }
 
 .wheel-arrow {
@@ -169,9 +165,9 @@ main {
     left: 60%;
     transform: rotate(0deg) translate(-50%, -50%);
     transform-origin: 0% 0%;
-    font-size: 14px;
+    font-size: 10px;
     text-align: center;
-    width: 80px;
+    width: 60px;
     color: #000;
 }
 
@@ -184,11 +180,36 @@ main {
     border-radius: 10px;
     font-size: 16px;
     color: #000;
+    width: 100%;
+    text-align: center;
+}
+
+/* Container */
+.container {
+    width: 50%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 40px;
+    background-color: #fff3e0;
+    border-radius: 10px;
+    max-width: 800px;
+}
+
+/* Main Content */
+.main {
+    width: 100%;
+    text-align: center;
+}
+
+/* Game Container */
+.game-container {
+    width: 100%;
 }
 
 /* Center Content */
 .center-content {
-    width: 70%;
+    width: 100%;
     padding: 10px;
     text-align: center;
 }
@@ -256,11 +277,19 @@ main {
     margin-top: 5px;
 }
 
+/* Beer Counter Section */
+.beer-counter {
+    width: 25%;
+    margin-left: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
 /* Player Drink Tracker */
 .player-drink-tracker {
-    width: 200px;
+    width: 100%;
     padding: 10px;
-    margin-left: 20px;
 }
 
 .player-stat {
@@ -273,11 +302,13 @@ main {
     justify-content: space-between;
     align-items: center;
     font-size: 18px;
+    width: 100%;
 }
 
 /* Sips Chart */
-.player-drink-tracker canvas {
+#sipsChart {
     width: 100%;
+    max-width: 300px;
     height: 200px;
 }
 

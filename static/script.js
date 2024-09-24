@@ -11,7 +11,6 @@ let enableTimer = true;
 let turnNumber = 0;
 let sipsPerTurn = {}; // { turnNumber: { playerName: sips, ... }, ... }
 
-
 // Open the settings menu
 function openSettings() {
     const settingsElement = document.getElementById('settings');
@@ -73,11 +72,17 @@ function timerBarFull() {
     startTimerBar();
 }
 
+// Trigger the drinking action and update the player states
 function timeToSip() {
     turnNumber++; // Increment turn number
     const currentPlayerIndex = updatePlayerTurn();
+    // Update conditions for the new turn
     updateConditions(true);
-    spinWheel();
+
+    // Spin the wheel automatically
+    if (enableSpecialAbilities) {
+        spinWheel();
+    }
 
     const playersContainer = document.getElementById('players');
     const playerElements = playersContainer.getElementsByClassName('player');
@@ -86,13 +91,6 @@ function timeToSip() {
 
     // Initialize sips data for this turn
     sipsPerTurn[turnNumber] = {};
-
-    if (enableSpecialAbilities) {
-        // assignSpecialAbility(currentPlayerName); // Removed in favor of the wheel
-    } else {
-        const abilitiesContainer = document.getElementById('special-abilities');
-        abilitiesContainer.innerHTML = '';
-    }
 
     Array.from(playerElements).forEach((playerElement, index) => {
         const playerName = playerElement.querySelector('span').innerText;
@@ -225,7 +223,6 @@ function updateConditions(isDuringGameplay = false) {
     }
 }
 
-
 // Save the settings and close the settings menu
 function saveSettings() {
     enableQuestions = document.getElementById('enable-questions').checked;
@@ -246,7 +243,6 @@ function saveSettings() {
     updateConditions();
 }
 
-// Special Abilities List
 const specialAbilities = [
     'Double Trouble I: Double the number of sips another player must take. The rule only applies for the current round and has no further effect.',
     'Double Trouble II: Double the number of sips another player must take. The effect lasts until the player you targeted completes their next turn.',
@@ -289,45 +285,43 @@ const specialAbilities = [
     'Shield II: Protect yourself from drinking until your next turn.'
 ];
 
-
+// Create the wheel with a smaller number of random abilities
 function createWheel() {
     const wheel = document.querySelector('.wheel');
-  
+
     // Decide the number of slices to display, e.g., 6
     const numberOfSlices = 6;
-  
+
     // Randomly shuffle and select abilities
     const shuffledAbilities = specialAbilities.sort(() => 0.5 - Math.random());
     const selectedAbilities = shuffledAbilities.slice(0, numberOfSlices);
-  
+
     const sliceDegree = 360 / numberOfSlices;
-  
+
     // Remove existing slices
     wheel.innerHTML = '<div class="wheel-arrow">▲</div>';
-  
+
     selectedAbilities.forEach((ability, index) => {
-      const slice = document.createElement('div');
-      slice.className = 'wheel-slice';
-      slice.style.transform = `rotate(${index * sliceDegree}deg) skewY(${90 - sliceDegree}deg)`;
-  
-      // Alternate colors between dark and light
-      const lightColor = '#ffe0b2'; // Light color
-      const darkColor = '#ffb74d';  // Dark color
-      slice.style.backgroundColor = index % 2 === 0 ? lightColor : darkColor;
-  
-      const text = document.createElement('div');
-      text.className = 'slice-text';
-      text.style.transform = `rotate(${sliceDegree / 2}deg)`;
-      text.innerText = ability.split(':')[0]; // Show only the title
-      slice.appendChild(text);
-      wheel.appendChild(slice);
+        const slice = document.createElement('div');
+        slice.className = 'wheel-slice';
+        slice.style.transform = `rotate(${index * sliceDegree}deg) skewY(${90 - sliceDegree}deg)`;
+
+        // Alternate colors between dark and light
+        const lightColor = '#ffe0b2'; // Light color
+        const darkColor = '#ffb74d';  // Dark color
+        slice.style.backgroundColor = index % 2 === 0 ? lightColor : darkColor;
+
+        const text = document.createElement('div');
+        text.className = 'slice-text';
+        text.style.transform = `rotate(${sliceDegree / 2}deg)`;
+        text.innerText = ability.split(':')[0]; // Show only the title
+        slice.appendChild(text);
+        wheel.appendChild(slice);
     });
-  
+
     // Store the selected abilities for use when determining the result
     wheel.dataset.selectedAbilities = JSON.stringify(selectedAbilities);
-  }
-  
-
+}
 
 let spinning = false;
 
@@ -343,8 +337,8 @@ function spinWheel() {
     const sliceDegree = 360 / numberOfSlices;
     const randomDegree = Math.floor(Math.random() * 360) + 720; // At least 2 full rotations
 
-    // Reduce spin duration to 2 seconds
-    wheel.style.transition = 'transform 2s cubic-bezier(0.33, 1, 0.68, 1)';
+    // Reduce spin duration to 1 second
+    wheel.style.transition = 'transform 1s cubic-bezier(0.33, 1, 0.68, 1)';
     wheel.style.transform = `rotate(${randomDegree}deg)`;
 
     // Determine which ability was selected
@@ -356,14 +350,11 @@ function spinWheel() {
 
         // Display the ability description below the wheel
         const abilityDescriptionDiv = document.getElementById('ability-description');
-        abilityDescriptionDiv.innerHTML = `<strong>${currentPlayerName} got:</strong> ${selectedAbility}`;
+        abilityDescriptionDiv.innerHTML = `<strong>Selected Ability:</strong> ${selectedAbility}`;
 
         spinning = false;
-    }, 2000); // Match the reduced transition duration
+    }, 1000); // Match the reduced transition duration
 }
-
-  
-
 
 // Update the player drink tracker
 function updatePlayerDrinkTracker() {
@@ -379,14 +370,7 @@ function updatePlayerDrinkTracker() {
     }
 }
 
-// Start the timer bar on page load if enabled
-window.onload = function() {
-    createWheel();
-    if (enableTimer) {
-        startTimerBar();
-    }
-};
-
+// Update Sips Chart
 function updateSipsChart() {
     const ctx = document.getElementById('sipsChart').getContext('2d');
 
@@ -422,9 +406,14 @@ function updateSipsChart() {
         options: {
             responsive: true,
             maintainAspectRatio: false,
-            title: {
-                display: true,
-                text: 'Sips per Turn',
+            plugins: {
+                legend: {
+                    display: true,
+                },
+                title: {
+                    display: true,
+                    text: 'Sips per Turn',
+                },
             },
             scales: {
                 x: {
@@ -457,3 +446,16 @@ function getRandomColor(index) {
     ];
     return colors[index % colors.length];
 }
+
+// Start the timer bar on page load if enabled
+window.onload = function() {
+    updateConditions();
+    createWheel();
+    if (enableTimer) {
+        startTimerBar();
+    }
+};
+
+
+// Special Abilities List
+
