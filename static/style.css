@@ -30,7 +30,7 @@ header {
 .player-turn {
     font-size: 24px;
     color: white;
-    margin-bottom: 10px;
+    margin-bottom: 20px; /* Increased space */
     background-color: #ff9800; /* Same color as conditions-container */
     padding: 10px 20px;
     border-radius: 10px;
@@ -47,7 +47,7 @@ header {
     height: 20px;
     border: 2px solid white;
     border-radius: 10px;
-    margin: 0 auto;
+    margin: 20px auto; /* Increased space */
     background-color: transparent;
     position: relative;
 }
@@ -89,7 +89,7 @@ header {
     padding: 20px;
     font-size: 20px;
     border-radius: 20px; /* Rounded corners uniformly */
-    margin: 130px auto 20px auto; /* Lowered to not be too close to the timer bar */
+    margin: 200px auto 20px auto; /* Moved up by 100px from previous 130px */
     text-align: center;
     display: flex;
     justify-content: center;
@@ -115,7 +115,7 @@ main {
     align-items: flex-start;
     width: 100%;
     padding: 20px;
-    margin-top: 150px; /* To account for fixed header and extra rules box */
+    margin-top: 300px; /* Moved up by 100px from previous 150px */
     flex-direction: column; /* Stack elements vertically */
 }
 
@@ -172,7 +172,7 @@ main {
 
 /* Ability Explanation */
 .ability-explanation {
-    margin-top: 10px;
+    margin-top: 20px; /* Increased space for balance */
     padding: 15px;
     background-color: #fff3e0;
     border: 2px solid #ffb74d;
@@ -286,7 +286,7 @@ main {
     display: flex;
     flex-direction: column;
     align-items: flex-start; /* Align items to the start for left justification */
-    max-height: 400px; /* Optional: set a maximum height */
+    max-height: 400px;
     overflow: hidden; /* Prevent content from overflowing */
 }
 
