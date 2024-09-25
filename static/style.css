@@ -31,7 +31,7 @@ header {
     font-size: 24px;
     color: white;
     margin-bottom: 10px;
-    background-color: #ff9800; /* Added background box */
+    background-color: #ff9800; /* Same color as conditions-container */
     padding: 10px 20px;
     border-radius: 10px;
     display: inline-block;
@@ -275,6 +275,9 @@ main {
     display: flex;
     gap: 5px;
     margin-top: 5px;
+    justify-content: flex-start; /* Left justify the drinks */
+    width: 100%;
+    padding-left: 10px;
 }
 
 /* Beer Counter and Graph Section */
@@ -282,7 +285,7 @@ main {
     width: 25%;
     display: flex;
     flex-direction: column;
-    align-items: center;
+    align-items: flex-start; /* Align items to the start for left justification */
     max-height: 400px; /* Optional: set a maximum height */
     overflow: hidden; /* Prevent content from overflowing */
 }
@@ -316,11 +319,15 @@ main {
     padding: 10px;
     margin-bottom: 10px;
     display: flex;
-    justify-content: space-between;
+    justify-content: flex-start; /* Left justify the content */
     align-items: center;
     font-size: 18px;
     width: 100%;
     box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+}
+
+.player-stat span:first-child {
+    margin-right: 10px;
 }
 
 /* Settings */
