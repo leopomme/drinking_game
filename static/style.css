@@ -126,7 +126,7 @@ main {
     justify-content: center; /* Center the elements */
     align-items: flex-start;
     gap: 15px; /* Equal spacing of 15px between elements */
-    margin-top: 0px; /* Lifted above */
+    margin-top: 10px; /* Lifted above */
 }
 
 /* Rolling Tube Section */
@@ -329,7 +329,7 @@ main {
 }
 
 .player-stat span:first-child {
-    margin-right: 0px;
+    margin-right: 4px;
 }
 
 /* Settings */
