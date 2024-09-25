@@ -115,7 +115,7 @@ main {
     align-items: flex-start;
     width: 100%;
     padding: 20px;
-    margin-top: 160px; /* Further moved up by 70px from previous 230px */
+    margin-top: 60px; /* Further moved up by 70px from previous 230px */
     flex-direction: column; /* Stack elements vertically */
 }
 
@@ -126,7 +126,7 @@ main {
     justify-content: center; /* Center the elements */
     align-items: flex-start;
     gap: 15px; /* Equal spacing of 15px between elements */
-    margin-top: 20px; /* Lifted above */
+    margin-top: 0px; /* Lifted above */
 }
 
 /* Rolling Tube Section */
@@ -329,7 +329,7 @@ main {
 }
 
 .player-stat span:first-child {
-    margin-right: 10px;
+    margin-right: 0px;
 }
 
 /* Settings */
