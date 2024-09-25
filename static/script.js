@@ -16,12 +16,18 @@ function openSettings() {
     const settingsElement = document.getElementById('settings');
     settingsElement.style.display = 'flex';
     populatePlayerList();
+    // Hide the extra rules box when settings are opened
+    const conditionsContainer = document.querySelector('.conditions-container');
+    conditionsContainer.style.display = 'none';
 }
 
 // Close the settings menu
 function closeSettings() {
     const settingsElement = document.getElementById('settings');
     settingsElement.style.display = 'none';
+    // Show the extra rules box based on enableQuestions
+    const conditionsContainer = document.querySelector('.conditions-container');
+    conditionsContainer.style.display = enableQuestions ? 'flex' : 'none';
 }
 
 // Update the display with the current player's turn
@@ -39,8 +45,8 @@ function updatePlayerTurn() {
 
     currentPlayerName = playerElements[currentPlayerIndex].querySelector('span').innerText;
 
-    const playerTurnDiv = document.getElementById('player-turn');
-    playerTurnDiv.textContent = `${currentPlayerName}'s turn!`;
+    const playerTurnDiv = document.getElementById('player-turn-text');
+    playerTurnDiv.textContent = `${currentPlayerName}'s Turn`;
 
     return currentPlayerIndex;
 }
@@ -185,7 +191,6 @@ function saveSettings() {
 
     // References to abilities-related elements
     const tubeSection = document.querySelector('.tube-section');
-    const selectedAbility = document.getElementById('selected-ability');
     const abilityExplanation = document.getElementById('ability-explanation');
 
     // Handle Timer Visibility
@@ -201,15 +206,12 @@ function saveSettings() {
     // Handle Special Abilities Visibility
     if (enableSpecialAbilities) {
         tubeSection.style.display = 'flex'; // Show the Rolling Tube Section
-        selectedAbility.style.display = 'block'; // Show Selected Ability Display
         abilityExplanation.style.display = 'block'; // Show Ability Explanation
     } else {
         tubeSection.style.display = 'none'; // Hide the Rolling Tube Section
-        selectedAbility.style.display = 'none'; // Hide Selected Ability Display
         abilityExplanation.style.display = 'none'; // Hide Ability Explanation
 
         // Clear any selected abilities when disabled
-        document.getElementById('selected-ability-name').innerText = 'None';
         document.getElementById('ability-explanation').innerHTML = '';
     }
 
@@ -220,6 +222,14 @@ function saveSettings() {
     updateConditions();
     updateSipsChart(); // Clear and update the graph
     closeSettings(); // Close the settings menu
+
+    // Center the main central box when special abilities are deactivated
+    const mainWrapper = document.querySelector('.main-wrapper');
+    if (!enableSpecialAbilities) {
+        mainWrapper.style.justifyContent = 'center';
+    } else {
+        mainWrapper.style.justifyContent = 'space-between';
+    }
 }
 
 // Special Abilities Array
@@ -312,7 +322,7 @@ function spinTube() {
     const numberOfAbilities = selectedAbilities.length;
     const randomIndex = Math.floor(Math.random() * numberOfAbilities);
 
-    // Calculate the translation distance (assuming each span is 100px high)
+    // Calculate the translation distance (assuming each span is 60px high)
     const abilityHeight = 60; // Reduced height for thinner tube
     const translateY = -randomIndex * abilityHeight;
 
@@ -523,17 +533,14 @@ window.onload = function() {
     }
 
     const tubeSection = document.querySelector('.tube-section');
-    const selectedAbility = document.getElementById('selected-ability');
     const abilityExplanation = document.getElementById('ability-explanation');
 
     // Set initial visibility based on enableSpecialAbilities state
     if (enableSpecialAbilities) {
         tubeSection.style.display = 'flex';
-        selectedAbility.style.display = 'block';
         abilityExplanation.style.display = 'block';
     } else {
         tubeSection.style.display = 'none';
-        selectedAbility.style.display = 'none';
         abilityExplanation.style.display = 'none';
     }
 };

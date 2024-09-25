@@ -23,7 +23,9 @@
 
     <header>
         <!-- Player Turn Display -->
-        <div id="player-turn" class="player-turn"></div>
+        <div id="player-turn" class="player-turn">
+            <span id="player-turn-text">Player X's Turn</span>
+        </div>
 
         <!-- Timer Bar -->
         <div id="drink-timer" class="drink-timer">
@@ -47,10 +49,6 @@
                     <div class="tube">
                         <!-- Ability names will be added dynamically -->
                     </div>
-                </div>
-                <!-- Selected Ability Display -->
-                <div id="selected-ability" class="selected-ability">
-                    <span id="selected-ability-name">None</span>
                 </div>
                 <!-- Ability Explanation -->
                 <div id="ability-explanation" class="ability-explanation">
@@ -84,13 +82,16 @@
                     </div>
                 </div>
             </section>
-        </div>
-        <!-- Beer Counter and Graph Section -->
-        <div class="beer-counter">
-            <div class="player-drink-tracker" id="player-drink-tracker">
-                <!-- Player drink tracker will be displayed here -->
+
+            <!-- Beer Counter Section -->
+            <div class="beer-counter">
+                <div class="player-drink-tracker" id="player-drink-tracker">
+                    <!-- Player drink tracker will be displayed here -->
+                </div>
             </div>
-            <!-- Sips Chart -->
+        </div>
+        <!-- Sips Chart -->
+        <div class="sips-chart-container">
             <canvas id="sipsChart"></canvas>
         </div>
     </main>
