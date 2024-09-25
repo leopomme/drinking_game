@@ -77,25 +77,19 @@ function timerBarFull() {
     startTimerBar();
 }
 
+// Modify timeToSip to spin tube only if enabled
 function timeToSip() {
     const updatedPlayerIndex = updatePlayerTurn();
-    if (updatedPlayerIndex === -1) return; // No players to proceed
+    if (updatedPlayerIndex === -1) return;
 
-    // Update conditions for the new turn
     updateConditions(true);
-
-    // Spin the tube automatically if special abilities are enabled
-    if (enableSpecialAbilities) {
-        spinTube();
-    }
 
     const playersContainer = document.getElementById('players');
     const playerElements = playersContainer.getElementsByClassName('player');
     currentPlayerName = playerElements[updatedPlayerIndex].querySelector('span').innerText;
     const difficulty = parseFloat(document.getElementById('difficulty').value);
 
-    // Initialize sips data for this turn
-    turnNumber++; // Increment turnNumber here
+    turnNumber++;
     sipsPerTurn[turnNumber] = {};
 
     Array.from(playerElements).forEach((playerElement, index) => {
@@ -103,33 +97,42 @@ function timeToSip() {
         const drinksElement = playerElement.querySelector('.drinks');
         drinksElement.innerHTML = '';
 
-        let sips = 0;
-        if (difficulty === 1) {
-            sips = Math.floor(Math.random() * 6) + 6;
-        } else if (difficulty > 0 && difficulty <= 0.25) {
-            sips = Math.random() < 0.5 ? Math.floor(Math.random() * 3) + 1 : 0;
-        } else if (difficulty > 0.25 && difficulty <= 0.5) {
-            sips = Math.random() < 0.67 ? Math.floor(Math.random() * 5) + 1 : 0;
-        } else if (difficulty > 0.5 && difficulty <= 0.75) {
-            sips = Math.random() < 0.8 ? Math.floor(Math.random() * 5) + 2 : 0;
-        } else if (difficulty > 0.75 && difficulty < 1) {
-            sips = Math.random() < 0.9 ? Math.floor(Math.random() * 5) + 2 : 0;
+        if (difficulty === 0) {
+            drinksElement.innerHTML = '0';
+            sipsPerTurn[turnNumber][playerName] = 0;
+            return;
         }
+
+        const mean = 15 * Math.pow(difficulty, 2);
+        const stdDev = 3.0 * Math.pow(difficulty, 2);
+
+        function gaussianRandom() {
+            let u = 0, v = 0;
+            while (u === 0) u = Math.random();
+            while (v === 0) v = Math.random();
+            return Math.sqrt(-2.0 * Math.log(u)) * Math.cos(2.0 * Math.PI * v);
+        }
+
+        const randomGaussian = gaussianRandom();
+        let sips = mean + stdDev * randomGaussian;
+        sips = Math.max(0, Math.floor(sips));
 
         drinksElement.innerHTML = sips ? `${'🍺'.repeat(sips)} (${sips})` : '0';
 
-        // Update playerStats
         if (!playerStats[playerName]) {
             playerStats[playerName] = { totalDrinks: 0 };
         }
         playerStats[playerName].totalDrinks += sips;
-
-        // Record sips for this turn
         sipsPerTurn[turnNumber][playerName] = sips;
     });
 
+    // Spin the tube only if special abilities are enabled
+    if (enableSpecialAbilities) {
+        spinTube();
+    }
+
     updatePlayerDrinkTracker();
-    updateSipsChart(); // Render the graph
+    updateSipsChart();
 }
 
 
@@ -236,8 +239,11 @@ function saveSettings() {
     enableSpecialAbilities = document.getElementById('enable-special-abilities').checked;
     enableTimer = document.getElementById('enable-timer').checked;
 
-    const timerBarContainer = document.getElementById('drink-timer');
+    const tubeSection = document.querySelector('.tube-section');
+    const selectedAbility = document.getElementById('selected-ability');
+    const abilityExplanation = document.getElementById('ability-explanation');
 
+    const timerBarContainer = document.getElementById('drink-timer');
     if (enableTimer) {
         timerBarContainer.style.display = 'block';
         startTimerBar();
@@ -246,57 +252,70 @@ function saveSettings() {
         clearInterval(timerInterval);
     }
 
-    currentPlayerIndex = -1; // Reset to start from the first player
-    turnNumber = 0; // Reset turnNumber
-    sipsPerTurn = {}; // Clear previous sips data
+    if (enableSpecialAbilities) {
+        tubeSection.style.display = 'flex';
+        selectedAbility.style.display = 'block';
+        abilityExplanation.style.display = 'block';
+    } else {
+        tubeSection.style.display = 'none';
+        selectedAbility.style.display = 'none';
+        abilityExplanation.style.display = 'none';
+
+        // Clear any selected abilities when disabled
+        document.getElementById('selected-ability-name').innerText = 'None';
+        document.getElementById('ability-explanation').innerHTML = '';
+    }
+
+    currentPlayerIndex = -1;
+    turnNumber = 0;
+    sipsPerTurn = {};
     updateConditions();
-    updateSipsChart(); // Clear and update the graph
+    updateSipsChart();
+    closeSettings();
 }
 
 
-// Special Abilities List
 const specialAbilities = [
-    '<strong>Double Trouble I</strong>: Double the number of sips another player must take. The rule only applies for the current round and has no further effect.',
-    '<strong>Double Trouble II</strong>: Double the number of sips another player must take. The effect lasts until the player you targeted completes their next turn.',
-    '<strong>Double Trouble III</strong>: Double the number of sips another player must take. The effect remains in play until it is your turn again.',
-    '<strong>Double Trouble IV</strong>: Double the number of sips another player must take. The effect remains until the end of the game.',
+    'Double Trouble I: Double the number of sips another player must take. The rule only applies for the current round and has no further effect.',
+    'Double Trouble II: Double the number of sips another player must take. The effect lasts until the player you targeted completes their next turn.',
+    'Double Trouble III: Double the number of sips another player must take. The effect remains in play until it is your turn again.',
+    'Double Trouble IV: Double the number of sips another player must take. The effect remains until the end of the game.',
     
-    '<strong>Reverse Double Trouble I</strong>: Double the number of sips you must take for this round.',
-    '<strong>Reverse Double Trouble III</strong>: Double the number of sips you must take until your next turn.',
+    'Reverse Double Trouble I: Double the number of sips you must take for this round.',
+    'Reverse Double Trouble III: Double the number of sips you must take until your next turn.',
 
-    '<strong>Swap Sips I</strong>: Swap your sips with another player. The effect only applies for the current round.',
-    '<strong>Swap Sips II</strong>: Swap your sips with another player. The effect lasts until the player you targeted completes their next turn.',
-    '<strong>Swap Sips III</strong>: Swap your sips with another player. The effect remains until your next turn.',
-    '<strong>Swap Sips IV</strong>: Swap your sips with another player. The effect lasts until the end of the game.',
+    'Swap Sips I: Swap your sips with another player. The effect only applies for the current round.',
+    'Swap Sips II: Swap your sips with another player. The effect lasts until the player you targeted completes their next turn.',
+    'Swap Sips III: Swap your sips with another player. The effect remains until your next turn.',
+    'Swap Sips IV: Swap your sips with another player. The effect lasts until the end of the game.',
 
-    '<strong>Democracy I</strong>: Choose a player. You and the others vote whether to remove the player’s sips, leave the number unchanged, or double the sips. The effect only applies for the current round.',
-    '<strong>Democracy II</strong>: Choose a player. You and the others vote whether to remove the player’s sips, leave the number unchanged, or double the sips. The effect lasts until the player’s next turn.',
-    '<strong>Democracy III</strong>: Choose a player. You and the others vote whether to remove the player’s sips, leave the number unchanged, or double the sips. The effect remains in play until your next turn.',
-    '<strong>Democracy IV</strong>: Choose a player. You and the others vote whether to remove the player’s sips, leave the number unchanged, or double the sips. The effect remains until the end of the game.',
-    '<strong>Democracy V</strong>: Choose a player. You and the others vote whether this player should down your entire drink or not.',
+    'Democracy I: Choose a player. You and the others vote whether to remove the player’s sips, leave the number unchanged, or double the sips. The effect only applies for the current round.',
+    'Democracy II: Choose a player. You and the others vote whether to remove the player’s sips, leave the number unchanged, or double the sips. The effect lasts until the player’s next turn.',
+    'Democracy III: Choose a player. You and the others vote whether to remove the player’s sips, leave the number unchanged, or double the sips. The effect remains in play until your next turn.',
+    'Democracy IV: Choose a player. You and the others vote whether to remove the player’s sips, leave the number unchanged, or double the sips. The effect remains until the end of the game.',
+    'Democracy V: Choose a player. You and the others vote whether this player should down your entire drink or not.',
 
-    '<strong>Reverse Democracy I</strong>: The others vote whether to remove your sips, leave the number unchanged, or double your sips. The rule only applies for the current round.',
-    '<strong>Reverse Democracy II</strong>: The others vote whether to remove your sips, leave the number unchanged, or double your sips. The effect lasts until your next turn.',
-    '<strong>Reverse Democracy III</strong>: The others vote whether to remove your sips, leave the number unchanged, or double your sips. The effect lasts until the end of the game.',
-    '<strong>Reverse Democracy V</strong>: The others vote whether you must down your entire drink or not.',
+    'Reverse Democracy I: The others vote whether to remove your sips, leave the number unchanged, or double your sips. The rule only applies for the current round.',
+    'Reverse Democracy II: The others vote whether to remove your sips, leave the number unchanged, or double your sips. The effect lasts until your next turn.',
+    'Reverse Democracy III: The others vote whether to remove your sips, leave the number unchanged, or double your sips. The effect lasts until the end of the game.',
+    'Reverse Democracy V: The others vote whether you must down your entire drink or not.',
 
-    '<strong>Full Chug</strong>: Force another player to down their entire drink.',
-    '<strong>Reverse Full Chug</strong>: You must down your entire drink.',
-    '<strong>Communist Full Chug</strong>: Everyone at the table must down their entire drink.',
+    'Full Chug: Force another player to down their entire drink.',
+    'Reverse Full Chug: You must down your entire drink.',
+    'Communist Full Chug: Everyone at the table must down their entire drink.',
 
-    '<strong>Bijection I</strong>: Choose two players. They must drink the higher number of sips between them. The effect only applies for the current round.',
-    '<strong>Bijection II</strong>: Choose two players. They must drink the higher number of sips between them until the player you targeted completes their next turn.',
-    '<strong>Bijection III</strong>: Choose two players. They must drink the higher number of sips between them until your next turn.',
-    '<strong>Bijection IV</strong>: Choose two players. They must drink the higher number of sips between them until the end of the game.',
+    'Bijection I: Choose two players. They must drink the higher number of sips between them. The effect only applies for the current round.',
+    'Bijection II: Choose two players. They must drink the higher number of sips between them until the player you targeted completes their next turn.',
+    'Bijection III: Choose two players. They must drink the higher number of sips between them until your next turn.',
+    'Bijection IV: Choose two players. They must drink the higher number of sips between them until the end of the game.',
 
-    '<strong>Reverse Bijection I</strong>: Choose a player to join you in a bijection. The effect only applies for the current round.',
-    '<strong>Reverse Bijection II</strong>: Choose a player to join you in a bijection. The effect lasts until the player you targeted completes their next turn.',
-    '<strong>Reverse Bijection III</strong>: Choose a player to join you in a bijection. The effect lasts until your next turn.',
+    'Reverse Bijection I: Choose a player to join you in a bijection. The effect only applies for the current round.',
+    'Reverse Bijection II: Choose a player to join you in a bijection. The effect lasts until the player you targeted completes their next turn.',
+    'Reverse Bijection III: Choose a player to join you in a bijection. The effect lasts until your next turn.',
     
-    '<strong>Shield I</strong>: Protect yourself from drinking for the current round.',
-    '<strong>Shield II</strong>: Protect yourself from drinking until your next turn.'
+    'Shield I: Protect yourself from drinking for the current round.',
+    'Shield II: Protect yourself from drinking until your next turn.'
 ];
-
 
 
 // New Rolling Tube Implementation
@@ -324,29 +343,37 @@ function createTube() {
 let spinningTube = false;
 
 function spinTube() {
-    if (spinningTube) return;
+    if (!enableSpecialAbilities || spinningTube) return;
     spinningTube = true;
 
-    createTube(); // Regenerate the tube with all abilities
+    const rollButton = document.querySelector('.roll-button');
+    rollButton.disabled = true;
+    rollButton.style.cursor = 'not-allowed';
+    rollButton.style.opacity = '0.6';
+
+    createTube();
 
     const tube = document.querySelector('.tube');
     const selectedAbilities = JSON.parse(tube.dataset.selectedAbilities);
     const numberOfAbilities = selectedAbilities.length;
     const randomIndex = Math.floor(Math.random() * numberOfAbilities);
 
-    // Calculate the translation distance (assuming each span is 100px wide)
-    const translateX = -randomIndex * 100;
+    const translateY = -randomIndex * 100;
+    tube.style.transform = `translateY(${translateY}px)`;
 
-    // Apply the transform to spin the tube
-    tube.style.transform = `translateX(${translateX}px)`;
-
-    // After 1 second, display the selected ability
     setTimeout(() => {
         const selectedAbility = selectedAbilities[randomIndex];
-        document.getElementById('selected-ability-name').textContent = selectedAbility.split(':')[0];
-        document.getElementById('ability-explanation').innerHTML = `<strong>${selectedAbility}</strong>`;
+        const abilityParts = selectedAbility.split(':');
+
+        document.getElementById('selected-ability-name').innerHTML = `<strong>${abilityParts[0]}</strong>`;
+        document.getElementById('ability-explanation').innerHTML = `<strong>${abilityParts[0]}</strong>: ${abilityParts[1].trim()}`;
+        
         spinningTube = false;
-    }, 1000); // Match the transition duration in CSS
+
+        rollButton.disabled = false;
+        rollButton.style.cursor = 'pointer';
+        rollButton.style.opacity = '1';
+    }, 1000);
 }
 
 
@@ -464,11 +491,25 @@ function getColor(index) {
     return colors[index % colors.length];
 }
 
-// Start the timer bar on page load if enabled
+// Initialize visibility on page load
 window.onload = function() {
     updateConditions();
     createTube();
     if (enableTimer) {
         startTimerBar();
+    }
+
+    const tubeSection = document.querySelector('.tube-section');
+    const selectedAbility = document.getElementById('selected-ability');
+    const abilityExplanation = document.getElementById('ability-explanation');
+
+    if (enableSpecialAbilities) {
+        tubeSection.style.display = 'flex';
+        selectedAbility.style.display = 'block';
+        abilityExplanation.style.display = 'block';
+    } else {
+        tubeSection.style.display = 'none';
+        selectedAbility.style.display = 'none';
+        abilityExplanation.style.display = 'none';
     }
 };
