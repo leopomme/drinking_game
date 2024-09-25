@@ -81,7 +81,7 @@ header {
     z-index: 1001;
 }
 
-/* Conditions Container */
+/* Conditions Container (Extra Rule Box) */
 .conditions-container {
     width: 800px; /* Match the container width */
     background-color: #ffb74d;
@@ -89,12 +89,12 @@ header {
     padding: 20px;
     font-size: 20px;
     border-radius: 20px; /* Rounded corners uniformly */
-    margin: 200px auto 20px auto; /* Moved up by 100px from previous 130px */
+    margin: 180px auto 20px auto; /* Reduced margin-top by 20px */
     text-align: center;
     display: flex;
     justify-content: center;
     align-items: center; /* Center text vertically */
-    height: 100px; /* Adjusted height for better centering */
+    height: 80px; /* Reduced height by 20px */
 }
 
 .conditions-container ul {
@@ -115,7 +115,7 @@ main {
     align-items: flex-start;
     width: 100%;
     padding: 20px;
-    margin-top: 300px; /* Moved up by 100px from previous 150px */
+    margin-top: 230px; /* Moved up by 70px from previous 300px */
     flex-direction: column; /* Stack elements vertically */
 }
 
@@ -123,8 +123,9 @@ main {
 .main-wrapper {
     display: flex;
     width: 100%;
-    justify-content: space-between; /* Maintain space between sections */
+    justify-content: center; /* Center the elements */
     align-items: flex-start;
+    gap: 15px; /* Equal spacing of 15px between elements */
     margin-top: 20px; /* Lifted above */
 }
 
@@ -134,12 +135,12 @@ main {
     display: flex;
     flex-direction: column;
     align-items: center;
-    margin-right: 20px;
+    margin: 0 7.5px; /* Half of gap to maintain equal spacing */
 }
 
 .tube-container {
     width: 300px;
-    height: 60px; /* Reduced height for thinner tube */
+    height: 50px; /* Reduced height by 10px for thinner tube */
     border: 3px solid #ffb74d;
     border-radius: 15px; /* Reduced radius for thinner appearance */
     overflow: hidden;
@@ -157,9 +158,9 @@ main {
 }
 
 .tube span {
-    flex: 0 0 60px; /* Reduced height to match tube-container */
+    flex: 0 0 50px; /* Reduced height to match tube-container */
     width: 100%;
-    height: 60px; /* Added height */
+    height: 50px; /* Adjusted height */
     text-align: center;
     font-size: 16px;
     font-weight: bold;
@@ -288,6 +289,7 @@ main {
     align-items: flex-start; /* Align items to the start for left justification */
     max-height: 400px;
     overflow: hidden; /* Prevent content from overflowing */
+    margin: 0 7.5px; /* Half of gap to maintain equal spacing */
 }
 
 .sips-chart-container {
