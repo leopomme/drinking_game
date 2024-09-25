@@ -313,7 +313,7 @@ function spinTube() {
     const randomIndex = Math.floor(Math.random() * numberOfAbilities);
 
     // Calculate the translation distance (assuming each span is 100px high)
-    const abilityHeight = 100; // Height of each ability span (matches CSS tube-container height)
+    const abilityHeight = 60; // Reduced height for thinner tube
     const translateY = -randomIndex * abilityHeight;
 
     // Apply the transform to spin the tube
