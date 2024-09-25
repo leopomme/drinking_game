@@ -81,7 +81,7 @@ header {
     padding: 20px;
     font-size: 20px;
     border-radius: 10px;
-    margin: 150px auto 20px auto; /* Center horizontally */
+    margin: 100px auto 20px auto; /* Reduced top margin from 150px to 100px */
     text-align: center;
 }
 
@@ -104,14 +104,16 @@ main {
     width: 100%;
     padding: 20px;
     margin-top: 100px; /* To account for fixed header */
+    flex-direction: column; /* Added to stack elements vertically when space is limited */
 }
 
 /* Main Wrapper */
 .main-wrapper {
     display: flex;
     width: 100%;
-    justify-content: space-between; /* Changed from center to space-between */
+    justify-content: space-between; /* Maintain space between sections */
     align-items: flex-start;
+    margin-top: 20px; /* Lifted above */
 }
 
 /* Rolling Tube Section */
@@ -125,7 +127,7 @@ main {
 
 .tube-container {
     width: 300px;
-    height: 50px;
+    height: 100px; /* Updated from 50px to 100px */
     border: 3px solid #ffb74d;
     border-radius: 25px;
     overflow: hidden;
@@ -136,18 +138,24 @@ main {
 
 .tube {
     display: flex;
+    flex-direction: column; /* Changed from row to column for vertical rolling */
     align-items: center;
-    height: 100%;
-    transition: transform 1s ease-out;
+    height: 100%; /* Ensure it fills the container */
+    transition: transform 1s ease-out; /* Ensure transition matches script.js */
 }
 
 .tube span {
     flex: 0 0 100px;
+    width: 100%;
+    height: 100px; /* Added height */
     text-align: center;
     font-size: 16px;
     font-weight: bold;
     color: #333;
     user-select: none;
+    display: flex;
+    justify-content: center;
+    align-items: center; /* Center text vertically */
 }
 
 /* Selected Ability Display */
@@ -271,8 +279,6 @@ main {
     display: flex;
     flex-direction: column;
     align-items: center;
-    /* Remove fixed height to allow dynamic sizing */
-    /* height: 400px; */ /* Remove or adjust as needed */
     max-height: 400px; /* Optional: set a maximum height */
     overflow: hidden; /* Prevent content from overflowing */
 }
@@ -431,4 +437,22 @@ button:hover {
         flex-direction: column;
         align-items: center;
     }
+}
+
+/* Smooth Transitions for Visibility Changes */
+.tube-section, .selected-ability, .ability-explanation, .beer-counter {
+    transition: opacity 0.5s ease, visibility 0.5s ease;
+}
+
+.hidden {
+    opacity: 0;
+    visibility: hidden;
+    height: 0;
+    overflow: hidden;
+}
+
+.visible {
+    opacity: 1;
+    visibility: visible;
+    height: auto;
 }

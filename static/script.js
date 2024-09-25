@@ -77,68 +77,10 @@ function timerBarFull() {
     startTimerBar();
 }
 
-// Modify timeToSip to spin tube only if enabled
-function timeToSip() {
-    const updatedPlayerIndex = updatePlayerTurn();
-    if (updatedPlayerIndex === -1) return;
-
-    updateConditions(true);
-
-    const playersContainer = document.getElementById('players');
-    const playerElements = playersContainer.getElementsByClassName('player');
-    currentPlayerName = playerElements[updatedPlayerIndex].querySelector('span').innerText;
-    const difficulty = parseFloat(document.getElementById('difficulty').value);
-
-    turnNumber++;
-    sipsPerTurn[turnNumber] = {};
-
-    Array.from(playerElements).forEach((playerElement, index) => {
-        const playerName = playerElement.querySelector('span').innerText;
-        const drinksElement = playerElement.querySelector('.drinks');
-        drinksElement.innerHTML = '';
-
-        if (difficulty === 0) {
-            drinksElement.innerHTML = '0';
-            sipsPerTurn[turnNumber][playerName] = 0;
-            return;
-        }
-
-        const mean = 15 * Math.pow(difficulty, 2);
-        const stdDev = 3.0 * Math.pow(difficulty, 2);
-
-        function gaussianRandom() {
-            let u = 0, v = 0;
-            while (u === 0) u = Math.random();
-            while (v === 0) v = Math.random();
-            return Math.sqrt(-2.0 * Math.log(u)) * Math.cos(2.0 * Math.PI * v);
-        }
-
-        const randomGaussian = gaussianRandom();
-        let sips = mean + stdDev * randomGaussian;
-        sips = Math.max(0, Math.floor(sips));
-
-        drinksElement.innerHTML = sips ? `${'🍺'.repeat(sips)} (${sips})` : '0';
-
-        if (!playerStats[playerName]) {
-            playerStats[playerName] = { totalDrinks: 0 };
-        }
-        playerStats[playerName].totalDrinks += sips;
-        sipsPerTurn[turnNumber][playerName] = sips;
-    });
-
-    // Spin the tube only if special abilities are enabled
-    if (enableSpecialAbilities) {
-        spinTube();
-    }
-
-    updatePlayerDrinkTracker();
-    updateSipsChart();
-}
-
-
 // Handle spacebar key press for rolling the dice
 document.addEventListener('keydown', (event) => {
     if (event.code === 'Space') {
+        event.preventDefault(); // Prevent default spacebar behavior like page scrolling
         timeToSip();
     }
 });
@@ -185,6 +127,7 @@ function populatePlayerList() {
         const playerName = playerElement.querySelector('span').innerText;
         const playerTag = document.createElement('div');
         playerTag.className = 'player-tag';
+        // Prevent the event from bubbling up to the parent 'onclick'
         playerTag.innerHTML = `<span>${playerName}</span><button onclick="removePlayer('${playerName}')">x</button>`;
         playerList.appendChild(playerTag);
     });
@@ -194,7 +137,7 @@ function populatePlayerList() {
 function removePlayer(playerName) {
     const playersContainer = document.getElementById('players');
     const playerElements = Array.from(playersContainer.getElementsByClassName('player'));
-    
+
     const playerToRemove = playerElements.find(playerElement => playerElement.querySelector('span').innerText === playerName);
     if (playerToRemove) {
         playersContainer.removeChild(playerToRemove);
@@ -235,14 +178,17 @@ function updateConditions(isDuringGameplay = false) {
 
 // Save the settings and close the settings menu
 function saveSettings() {
+    // Update state variables based on checkbox states
     enableQuestions = document.getElementById('enable-questions').checked;
     enableSpecialAbilities = document.getElementById('enable-special-abilities').checked;
     enableTimer = document.getElementById('enable-timer').checked;
 
+    // References to abilities-related elements
     const tubeSection = document.querySelector('.tube-section');
     const selectedAbility = document.getElementById('selected-ability');
     const abilityExplanation = document.getElementById('ability-explanation');
 
+    // Handle Timer Visibility
     const timerBarContainer = document.getElementById('drink-timer');
     if (enableTimer) {
         timerBarContainer.style.display = 'block';
@@ -252,29 +198,31 @@ function saveSettings() {
         clearInterval(timerInterval);
     }
 
+    // Handle Special Abilities Visibility
     if (enableSpecialAbilities) {
-        tubeSection.style.display = 'flex';
-        selectedAbility.style.display = 'block';
-        abilityExplanation.style.display = 'block';
+        tubeSection.style.display = 'flex'; // Show the Rolling Tube Section
+        selectedAbility.style.display = 'block'; // Show Selected Ability Display
+        abilityExplanation.style.display = 'block'; // Show Ability Explanation
     } else {
-        tubeSection.style.display = 'none';
-        selectedAbility.style.display = 'none';
-        abilityExplanation.style.display = 'none';
+        tubeSection.style.display = 'none'; // Hide the Rolling Tube Section
+        selectedAbility.style.display = 'none'; // Hide Selected Ability Display
+        abilityExplanation.style.display = 'none'; // Hide Ability Explanation
 
         // Clear any selected abilities when disabled
         document.getElementById('selected-ability-name').innerText = 'None';
         document.getElementById('ability-explanation').innerHTML = '';
     }
 
-    currentPlayerIndex = -1;
-    turnNumber = 0;
-    sipsPerTurn = {};
+    // Reset game state
+    currentPlayerIndex = -1; // Reset to start from the first player
+    turnNumber = 0; // Reset turnNumber
+    sipsPerTurn = {}; // Clear previous sips data
     updateConditions();
-    updateSipsChart();
-    closeSettings();
+    updateSipsChart(); // Clear and update the graph
+    closeSettings(); // Close the settings menu
 }
 
-
+// Special Abilities Array
 const specialAbilities = [
     'Double Trouble I: Double the number of sips another player must take. The rule only applies for the current round and has no further effect.',
     'Double Trouble II: Double the number of sips another player must take. The effect lasts until the player you targeted completes their next turn.',
@@ -317,9 +265,6 @@ const specialAbilities = [
     'Shield II: Protect yourself from drinking until your next turn.'
 ];
 
-
-// New Rolling Tube Implementation
-
 // Function to create the rolling tube with all abilities
 function createTube() {
     const tube = document.querySelector('.tube');
@@ -328,54 +273,134 @@ function createTube() {
     // Shuffle the abilities to randomize the order
     const shuffledAbilities = specialAbilities.sort(() => 0.5 - Math.random());
 
+    // Duplicate the abilities multiple times to simulate continuous rolling
+    const repetitions = 3; // Number of times to repeat the abilities
+    const duplicatedAbilities = [];
+    for (let i = 0; i < repetitions; i++) {
+        duplicatedAbilities.push(...shuffledAbilities);
+    }
+
     // Display all abilities in the tube
-    shuffledAbilities.forEach(ability => {
+    duplicatedAbilities.forEach(ability => {
         const abilitySpan = document.createElement('span');
         abilitySpan.textContent = ability.split(':')[0]; // Display only the title
         tube.appendChild(abilitySpan);
     });
 
-    // Store the shuffled abilities for use when determining the result
-    tube.dataset.selectedAbilities = JSON.stringify(shuffledAbilities);
+    // Store the duplicated shuffled abilities for use when determining the result
+    tube.dataset.selectedAbilities = JSON.stringify(duplicatedAbilities);
 }
 
 // Flag to prevent multiple simultaneous spins
-let spinningTube = false;
+let spinningTubeFlag = false;
 
+// Function to spin the tube
 function spinTube() {
-    if (!enableSpecialAbilities || spinningTube) return;
-    spinningTube = true;
+    if (!enableSpecialAbilities || spinningTubeFlag) return; // Do not spin if disabled or already spinning
+    spinningTubeFlag = true;
 
+    // Disable the roll button
     const rollButton = document.querySelector('.roll-button');
     rollButton.disabled = true;
     rollButton.style.cursor = 'not-allowed';
     rollButton.style.opacity = '0.6';
 
-    createTube();
+    createTube(); // Regenerate the tube with all abilities
 
     const tube = document.querySelector('.tube');
     const selectedAbilities = JSON.parse(tube.dataset.selectedAbilities);
     const numberOfAbilities = selectedAbilities.length;
     const randomIndex = Math.floor(Math.random() * numberOfAbilities);
 
-    const translateY = -randomIndex * 100;
+    // Calculate the translation distance (assuming each span is 100px high)
+    const abilityHeight = 100; // Height of each ability span (matches CSS tube-container height)
+    const translateY = -randomIndex * abilityHeight;
+
+    // Apply the transform to spin the tube
+    tube.style.transition = 'transform 1s ease-out'; // Ensure transition is set
     tube.style.transform = `translateY(${translateY}px)`;
 
+    // Wait for the transition to complete
     setTimeout(() => {
         const selectedAbility = selectedAbilities[randomIndex];
         const abilityParts = selectedAbility.split(':');
 
-        document.getElementById('selected-ability-name').innerHTML = `<strong>${abilityParts[0]}</strong>`;
-        document.getElementById('ability-explanation').innerHTML = `<strong>${abilityParts[0]}</strong>: ${abilityParts[1].trim()}`;
-        
-        spinningTube = false;
+        // Set only the explanation without repeating the ability name
+        document.getElementById('ability-explanation').innerHTML = `${abilityParts[1].trim()}`;
 
+        spinningTubeFlag = false;
+
+        // Re-enable the roll button
         rollButton.disabled = false;
         rollButton.style.cursor = 'pointer';
         rollButton.style.opacity = '1';
-    }, 1000);
+    }, 1000); // Match the transition duration in CSS (1s)
 }
 
+// Modify timeToSip to spin tube only if enabled and remove cooldown delay
+function timeToSip() {
+    const updatedPlayerIndex = updatePlayerTurn();
+    if (updatedPlayerIndex === -1) return; // No players to proceed
+
+    updateConditions(true);
+
+    const playersContainer = document.getElementById('players');
+    const playerElements = playersContainer.getElementsByClassName('player');
+    currentPlayerName = playerElements[updatedPlayerIndex].querySelector('span').innerText;
+    const difficulty = parseFloat(document.getElementById('difficulty').value);
+
+    turnNumber++;
+    sipsPerTurn[turnNumber] = {};
+
+    Array.from(playerElements).forEach((playerElement, index) => {
+        const playerName = playerElement.querySelector('span').innerText;
+        const drinksElement = playerElement.querySelector('.drinks');
+        drinksElement.innerHTML = '';
+
+        if (difficulty === 0) {
+            drinksElement.innerHTML = '0';
+            sipsPerTurn[turnNumber][playerName] = 0;
+            return; // No sips for difficulty 0
+        }
+
+        // Adjusted mean and standard deviation
+        const mean = 15 * Math.pow(difficulty, 2); // Increased scaling factor
+        const stdDev = 3.0 * Math.pow(difficulty, 2); // Increased stdDev
+
+        // Gaussian random number generator
+        function gaussianRandom() {
+            let u = 0, v = 0;
+            while (u === 0) u = Math.random();
+            while (v === 0) v = Math.random();
+            return Math.sqrt(-2.0 * Math.log(u)) * Math.cos(2.0 * Math.PI * v);
+        }
+
+        const randomGaussian = gaussianRandom();
+        let sips = mean + stdDev * randomGaussian;
+
+        // Floor the number of sips and ensure it's not below 0
+        sips = Math.max(0, Math.floor(sips));
+
+        drinksElement.innerHTML = sips ? `${'🍺'.repeat(sips)} (${sips})` : '0';
+
+        // Update playerStats
+        if (!playerStats[playerName]) {
+            playerStats[playerName] = { totalDrinks: 0 };
+        }
+        playerStats[playerName].totalDrinks += sips;
+
+        // Record sips for this turn
+        sipsPerTurn[turnNumber][playerName] = sips;
+    });
+
+    // Spin the tube only if special abilities are enabled
+    if (enableSpecialAbilities) {
+        spinTube();
+    }
+
+    updatePlayerDrinkTracker();
+    updateSipsChart(); // Render the graph
+}
 
 // Update the player drink tracker
 function updatePlayerDrinkTracker() {
@@ -391,7 +416,6 @@ function updatePlayerDrinkTracker() {
     }
 }
 
-// Update Sips Chart with cumulative data
 // Update Sips Chart with cumulative data
 function updateSipsChart() {
     const ctx = document.getElementById('sipsChart').getContext('2d');
@@ -477,7 +501,6 @@ function updateSipsChart() {
     });
 }
 
-
 // Utility function to generate distinct colors for each player
 function getColor(index) {
     const colors = [
@@ -503,6 +526,7 @@ window.onload = function() {
     const selectedAbility = document.getElementById('selected-ability');
     const abilityExplanation = document.getElementById('ability-explanation');
 
+    // Set initial visibility based on enableSpecialAbilities state
     if (enableSpecialAbilities) {
         tubeSection.style.display = 'flex';
         selectedAbility.style.display = 'block';
