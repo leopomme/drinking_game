@@ -89,7 +89,7 @@ header {
     padding: 20px;
     font-size: 20px;
     border-radius: 20px; /* Rounded corners uniformly */
-    margin: 180px auto 20px auto; /* Reduced margin-top by 20px */
+    margin: 160px auto 20px auto; /* Further reduced margin-top by 70px from previous 230px */
     text-align: center;
     display: flex;
     justify-content: center;
@@ -115,7 +115,7 @@ main {
     align-items: flex-start;
     width: 100%;
     padding: 20px;
-    margin-top: 230px; /* Moved up by 70px from previous 300px */
+    margin-top: 160px; /* Further moved up by 70px from previous 230px */
     flex-direction: column; /* Stack elements vertically */
 }
 
@@ -415,8 +415,8 @@ main {
     justify-content: space-between;
 }
 
-.player-tag span {
-    margin-right: 10px;
+.player-tag span:first-child {
+    margin-right: 0; /* Only removes the margin between player name and colon */
 }
 
 .player-tag button {
