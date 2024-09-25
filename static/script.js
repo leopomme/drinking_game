@@ -421,7 +421,7 @@ function updatePlayerDrinkTracker() {
         const playerStat = playerStats[playerName];
         const playerElement = document.createElement('div');
         playerElement.className = 'player-stat';
-        playerElement.innerHTML = `<span>${playerName}</span>: <span>${playerStat.totalDrinks} 🍺</span>`;
+        playerElement.innerHTML = `<span>${playerName}</span>     <span>${playerStat.totalDrinks} 🍺</span>`;
         trackerContainer.appendChild(playerElement);
     }
 }
