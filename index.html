@@ -21,81 +21,79 @@
 </head>
 <body>
 
-    <header>
-        <!-- Player Turn Display -->
-        <div id="player-turn" class="player-turn">
-            <span id="player-turn-text">Player X's Turn</span>
-        </div>
+    <!-- Menu Icon -->
+    <div class="menu-icon" onclick="openSettings()">☰</div>
 
-        <!-- Timer Bar -->
-        <div id="drink-timer" class="drink-timer">
-            <div id="timer-bar" class="timer-bar"></div>
-        </div>
+    <!-- Player Turn Display -->
+    <div id="player-turn" class="player-turn">
+        <span id="player-turn-text">Player X's Turn</span>
+    </div>
 
-        <!-- Menu Icon -->
-        <div class="menu-icon" onclick="openSettings()">☰</div>
-    </header>
+    <!-- Timer Bar -->
+    <div id="drink-timer" class="drink-timer">
+        <div id="timer-bar" class="timer-bar"></div>
+    </div>
 
     <!-- Extra Rules Block -->
     <div class="conditions-container">
         <ul id="conditions"></ul>
     </div>
 
-    <main>
-        <div class="main-wrapper">
-            <!-- Rolling Tube Section -->
-            <div class="tube-section">
-                <div class="tube-container">
-                    <div class="tube">
-                        <!-- Ability names will be added dynamically -->
-                    </div>
-                </div>
-                <!-- Ability Explanation -->
-                <div id="ability-explanation" class="ability-explanation">
-                    <!-- Explanation will be displayed here without repeating the name -->
-                </div>
+    <!-- Special Ability Box -->
+    <div class="tube-section">
+        <div class="tube-container">
+            <div class="tube">
+                <!-- Ability names will be added dynamically -->
             </div>
+        </div>
+        <!-- Ability Explanation -->
+        <div id="ability-explanation" class="ability-explanation">
+            <!-- Explanation will be displayed here without repeating the name -->
+        </div>
+    </div>
 
-            <!-- Main Central Box -->
-            <section class="container">
-                <div class="main">
-                    <div class="game-container">
-                        <!-- Center Content -->
-                        <div class="center-content">
-                            <button class="roll-button" onclick="timeToSip()">Roll the dice, time to drink!</button>
-                            <div class="players-container">
-                                <div id="players" class="players">
-                                    <div class="player" onclick="editPlayer(this)">
-                                        <span>Player 1</span>
-                                        <div class="drinks">0</div>
-                                    </div>
-                                    <div class="player" onclick="editPlayer(this)">
-                                        <span>Player 2</span>
-                                        <div class="drinks">0</div>
-                                    </div>
-                                </div>
-                                <div class="add-player" onclick="addPlayer()">
-                                    Add Player<br>+
-                                </div>
+    <!-- Main Central Box -->
+    <section class="container">
+        <div class="main">
+            <div class="game-container">
+                <!-- Center Content -->
+                <div class="center-content">
+                    <button class="roll-button" onclick="timeToSip()">Roll the dice, time to drink!</button>
+                    <div class="players-container">
+                        <div id="players" class="players">
+                            <div class="player" onclick="editPlayer(this)">
+                                <span>Player 1</span>
+                                <div class="drinks">0</div>
                             </div>
+                            <div class="player" onclick="editPlayer(this)">
+                                <span>Player 2</span>
+                                <div class="drinks">0</div>
+                            </div>
+                        </div>
+                        <div class="add-player" onclick="addPlayer()">
+                            Add Player<br>+
                         </div>
                     </div>
                 </div>
-            </section>
+            </div>
+        </div>
+    </section>
 
-            <!-- Beer Counter Section -->
-            <div class="beer-counter">
-                <div class="player-drink-tracker" id="player-drink-tracker">
-                    <!-- Player drink tracker will be displayed here -->
-                </div>
+    <!-- Beer Counter and Graph Section -->
+    <div class="bottom-section">
+        <!-- Beer Counter Section -->
+        <div class="beer-counter">
+            <div class="player-drink-tracker" id="player-drink-tracker">
+                <!-- Player drink tracker will be displayed here -->
             </div>
         </div>
         <!-- Sips Chart -->
         <div class="sips-chart-container">
             <canvas id="sipsChart"></canvas>
         </div>
-    </main>
+    </div>
 
+    <!-- Settings -->
     <aside>
         <div id="settings" class="settings">
             <div class="settings-content">

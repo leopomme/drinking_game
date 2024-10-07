@@ -14,25 +14,24 @@ body {
     min-height: 100vh;
 }
 
-/* Header */
-header {
-    width: 100%;
-    text-align: center;
-    padding: 20px 0;
-    background-color: #f7d7a7;
+/* Menu Icon */
+.menu-icon {
+    cursor: pointer;
+    font-size: 64px;
     position: fixed;
-    top: 0;
-    left: 0;
-    z-index: 1000;
+    top: 10px;
+    right: 10px;
+    color: black;
+    z-index: 1001;
 }
 
 /* Player Turn Display */
 .player-turn {
-    font-size: 24px;
+    font-size: 28px; /* Increased font size */
     color: white;
-    margin-bottom: 20px; /* Increased space */
-    background-color: #ff9800; /* Same color as conditions-container */
-    padding: 10px 20px;
+    margin: 80px 0 20px 0; /* Adjusted margin for spacing */
+    background-color: #ff9800;
+    padding: 15px 25px; /* Increased padding */
     border-radius: 10px;
     display: inline-block;
 }
@@ -43,11 +42,11 @@ header {
 
 /* Timer Bar */
 .drink-timer {
-    width: 80%;
-    height: 20px;
+    width: 90%;
+    height: 30px; /* Increased height for thicker timer bar */
     border: 2px solid white;
-    border-radius: 10px;
-    margin: 20px auto; /* Increased space */
+    border-radius: 15px;
+    margin: 20px auto;
     background-color: transparent;
     position: relative;
 }
@@ -56,7 +55,7 @@ header {
     width: 0;
     height: 100%;
     background-color: green;
-    border-radius: 10px;
+    border-radius: 15px;
     transition: width 1s linear;
 }
 
@@ -70,31 +69,20 @@ header {
     100% { background-color: green; }
 }
 
-/* Menu Icon */
-.menu-icon {
-    cursor: pointer;
-    font-size: 64px;
-    position: fixed;
-    top: 10px;
-    right: 10px;
-    color: black;
-    z-index: 1001;
-}
-
 /* Conditions Container (Extra Rule Box) */
 .conditions-container {
-    width: 800px; /* Match the container width */
+    width: 90%;
+    max-width: 800px;
     background-color: #ffb74d;
     color: white;
     padding: 20px;
-    font-size: 20px;
-    border-radius: 20px; /* Rounded corners uniformly */
-    margin: 160px auto 20px auto; /* Further reduced margin-top by 70px from previous 230px */
+    font-size: 22px; /* Increased font size */
+    border-radius: 20px;
+    margin: 20px auto;
     text-align: center;
     display: flex;
     justify-content: center;
-    align-items: center; /* Center text vertically */
-    height: 80px; /* Reduced height by 20px */
+    align-items: center;
 }
 
 .conditions-container ul {
@@ -108,41 +96,21 @@ header {
     margin: 0 10px;
 }
 
-/* Main */
-main {
-    display: flex;
-    justify-content: center;
-    align-items: flex-start;
-    width: 100%;
-    padding: 20px;
-    margin-top: 20px; /* Further moved up by 70px from previous 230px */
-    flex-direction: column; /* Stack elements vertically */
-}
-
-/* Main Wrapper */
-.main-wrapper {
-    display: flex;
-    width: 100%;
-    justify-content: center; /* Center the elements */
-    align-items: flex-start;
-    gap: 15px; /* Equal spacing of 15px between elements */
-    margin-top: 30px; /* Lifted above */
-}
-
-/* Rolling Tube Section */
+/* Tube Section (Special Ability Box) */
 .tube-section {
-    width: 30%; /* Adjusted width */
+    width: 90%;
+    max-width: 800px;
     display: flex;
     flex-direction: column;
     align-items: center;
-    margin: 0 7.5px; /* Half of gap to maintain equal spacing */
+    margin: 20px auto;
 }
 
 .tube-container {
-    width: 300px;
-    height: 50px; /* Reduced height by 10px for thinner tube */
+    width: 100%;
+    height: 60px;
     border: 3px solid #ffb74d;
-    border-radius: 15px; /* Reduced radius for thinner appearance */
+    border-radius: 15px;
     overflow: hidden;
     position: relative;
     background-color: #ffe0b2;
@@ -151,80 +119,63 @@ main {
 
 .tube {
     display: flex;
-    flex-direction: column; /* Changed from row to column for vertical rolling */
+    flex-direction: column;
     align-items: center;
-    height: 100%; /* Ensure it fills the container */
-    transition: transform 1s ease-out; /* Ensure transition matches script.js */
+    height: 100%;
+    transition: transform 1s ease-out;
 }
 
 .tube span {
-    flex: 0 0 50px; /* Reduced height to match tube-container */
+    flex: 0 0 60px;
     width: 100%;
-    height: 50px; /* Adjusted height */
+    height: 60px;
     text-align: center;
-    font-size: 16px;
+    font-size: 20px; /* Increased font size */
     font-weight: bold;
     color: #333;
     user-select: none;
     display: flex;
     justify-content: center;
-    align-items: center; /* Center text vertically */
+    align-items: center;
 }
 
 /* Ability Explanation */
 .ability-explanation {
-    margin-top: 20px; /* Increased space for balance */
-    padding: 15px;
+    margin-top: 20px;
+    padding: 20px;
     background-color: #fff3e0;
     border: 2px solid #ffb74d;
     border-radius: 10px;
-    font-size: 16px;
+    font-size: 18px; /* Increased font size */
     color: #000;
-    width: 300px;
+    width: 100%;
     text-align: center;
     box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
 }
 
-/* Container */
+/* Main Central Box */
 .container {
-    width: 800px;
+    width: 90%;
+    max-width: 800px;
     display: flex;
     flex-direction: column;
     align-items: center;
-    padding: 40px;
+    padding: 40px 20px;
     background-color: #fff3e0;
     border-radius: 10px;
-    max-width: 1200px;
-}
-
-/* Main Content */
-.main {
-    width: 100%;
-    text-align: center;
-}
-
-/* Game Container */
-.game-container {
-    width: 100%;
-}
-
-/* Center Content */
-.center-content {
-    width: 100%;
-    padding: 10px;
-    text-align: center;
+    margin: 20px auto;
 }
 
 /* Roll Button */
 .roll-button {
-    padding: 15px 30px;
-    font-size: 22px;
+    padding: 20px 40px;
+    font-size: 24px; /* Increased font size */
     cursor: pointer;
     border-radius: 50px;
     border: none;
     background-color: #ff9800;
     color: white;
-    margin-bottom: 20px;
+    margin-bottom: 30px;
     transition: background-color 0.3s ease;
 }
 
@@ -235,6 +186,7 @@ main {
 /* Players Container */
 .players-container {
     display: flex;
+    flex-wrap: wrap;
     justify-content: center;
     align-items: flex-start;
     gap: 20px;
@@ -247,89 +199,85 @@ main {
     flex-wrap: wrap;
     justify-content: center;
     gap: 20px;
-    width: auto;
 }
 
 .player, .add-player {
     display: flex;
     flex-direction: column;
     align-items: center;
-    padding: 10px;
+    padding: 15px;
     background-color: #fff3e0;
     border: 2px solid #ffb74d;
     border-radius: 10px;
     box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
     cursor: pointer;
     transition: background-color 0.3s ease;
+    width: 120px;
 }
 
 .player:hover, .add-player:hover {
     background-color: #ffedcc;
 }
 
-.add-player {
-    width: 100px;
-    text-align: center;
+.player span, .add-player {
+    font-size: 18px; /* Increased font size */
 }
 
 .drinks {
     display: flex;
+    flex-wrap: wrap;
     gap: 5px;
     margin-top: 5px;
-    justify-content: flex-start; /* Left justify the drinks */
-    width: 100%;
-    padding-left: 10px;
-}
-
-/* Beer Counter and Graph Section */
-.beer-counter {
-    width: 25%;
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start; /* Align items to the start for left justification */
-    max-height: 400px;
-    overflow: hidden; /* Prevent content from overflowing */
-    margin: 0 7.5px; /* Half of gap to maintain equal spacing */
-}
-
-.sips-chart-container {
-    width: 800px; /* Match the main central box width */
-    margin: 20px auto 0 auto; /* Move below the main central box */
-    display: flex;
     justify-content: center;
-}
-
-#sipsChart {
     width: 100%;
-    max-width: 800px; /* Match the main central box width */
-    height: 400px;
-    /* Ensure it doesn't overflow */
-    overflow: hidden;
+    font-size: 16px; /* Increased font size */
 }
 
-/* Player Drink Tracker */
+/* Bottom Section (Beer Counter and Graph) */
+.bottom-section {
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-items: flex-start;
+    margin: 20px 0;
+}
+
+/* Beer Counter Section */
+.beer-counter {
+    width: 100%;
+    max-width: 400px;
+    padding: 20px;
+}
+
 .player-drink-tracker {
     width: 100%;
-    padding: 10px;
-    margin-bottom: 20px; /* Space between tracker and graph */
 }
 
 .player-stat {
     background-color: #fff3e0;
     border: 2px solid #ffb74d;
     border-radius: 10px;
-    padding: 10px;
+    padding: 15px;
     margin-bottom: 10px;
     display: flex;
-    justify-content: flex-start; /* Left justify the content */
+    justify-content: space-between;
     align-items: center;
-    font-size: 18px;
+    font-size: 18px; /* Increased font size */
     width: 100%;
     box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
 }
 
-.player-stat span:first-child {
-    margin-right: 4px;
+/* Sips Chart Container */
+.sips-chart-container {
+    flex: 1;
+    min-width: 300px;
+    padding: 20px;
+}
+
+#sipsChart {
+    width: 100%;
+    height: 400px;
 }
 
 /* Settings */
@@ -350,7 +298,7 @@ main {
     padding: 40px;
     border-radius: 10px;
     max-width: 500px;
-    width: 100%;
+    width: 90%;
 }
 
 .difficulty-container {
@@ -391,11 +339,6 @@ main {
     margin-top: 20px;
 }
 
-.remove-player label {
-    display: block;
-    margin-bottom: 10px;
-}
-
 #player-list {
     display: flex;
     flex-wrap: wrap;
@@ -415,8 +358,8 @@ main {
     justify-content: space-between;
 }
 
-.player-tag span:first-child {
-    margin-right: 0; /* Only removes the margin between player name and colon */
+.player-tag span {
+    margin-right: 10px;
 }
 
 .player-tag button {
@@ -430,7 +373,7 @@ main {
 button {
     margin-top: 10px;
     padding: 15px;
-    font-size: 18px;
+    font-size: 20px; /* Increased font size */
     cursor: pointer;
     border-radius: 50px;
     border: none;
@@ -444,17 +387,34 @@ button:hover {
 }
 
 /* Responsive Design */
-@media (max-width: 1200px) {
-    .container, .conditions-container, .beer-counter, .sips-chart-container {
-        width: 90%;
+@media (min-width: 768px) {
+    /* For tablets and above */
+    .bottom-section {
+        flex-direction: row;
     }
-    .tube-section, .beer-counter {
-        width: 100%;
-        margin: 10px 0;
+
+    .beer-counter, .sips-chart-container {
+        width: 50%;
     }
-    main {
+}
+
+@media (max-width: 767px) {
+    /* For mobile devices */
+    .bottom-section {
         flex-direction: column;
         align-items: center;
+    }
+
+    .beer-counter, .sips-chart-container {
+        width: 100%;
+    }
+
+    .player-turn {
+        margin-top: 60px; /* Adjust margin for mobile */
+    }
+
+    .menu-icon {
+        font-size: 48px; /* Adjust icon size for mobile */
     }
 }
 
